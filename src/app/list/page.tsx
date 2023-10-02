@@ -10,7 +10,7 @@ import data from "../../../public/database.json";
 export default function ListPagr() {
   const LIST_LIMIT = 100;
   const SEARCHABLE_LENGTH = 3;
-  const database: YugiohDatabase = data as YugiohDatabase;
+  const database: YugiohDatabase = data as unknown as YugiohDatabase;
 
   const headers: Array<string> = [
     "id",

@@ -18,7 +18,7 @@ export interface UseYugiohDatabaseProps {
 export function useYugiohDatabase({ filters, sort }: UseYugiohDatabaseProps) {
   const LIST_LIMIT = 100;
   const SEARCHABLE_LENGTH = 3;
-  const database: YugiohDatabase = data as YugiohDatabase;
+  const database: YugiohDatabase = data as unknown as YugiohDatabase;
 
   const [searchResult, setSearchResult] = useState<Array<YugiohCard>>([]);
 
