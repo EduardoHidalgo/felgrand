@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
 import { YugiohCard } from "@/types";
 import { useYugiohDatabase } from "@/hooks/useYugiohDatabase";
+import { Notification, NotificationType } from "@/components/toast";
 import {
   BuilderListType,
   BuilderSearchFilter,
@@ -36,7 +37,13 @@ export interface UseBuilderReturn {
   searchResult: YugiohCard[];
 }
 
-export const useBuilder = (): UseBuilderReturn => {
+export interface UseBuilderProps {
+  createNotification: (notification: Omit<Notification, "id">) => void;
+}
+
+export const useBuilder = ({
+  createNotification,
+}: UseBuilderProps): UseBuilderReturn => {
   const [searchArgs, setSearchArgs] = useState<SearchArgs>(searchArgsDefault);
   const [mainList, setMainList] = useState<Array<YugiohCard>>([]);
   const [extraList, setExtraList] = useState<Array<YugiohCard>>([]);
@@ -50,6 +57,14 @@ export const useBuilder = (): UseBuilderReturn => {
 
   const filteredSearch = (search: string) => {
     searchYugiohCards(search);
+  };
+
+  const notifyCardLimitError = () => {
+    return createNotification({
+      message: "You can't add more than 3 same cards on this list",
+      title: "Unable to add the card",
+      type: NotificationType.error,
+    });
   };
 
   const onCheckedSearchFilter = (value: boolean, type: BuilderSearchFilter) => {
@@ -98,10 +113,25 @@ export const useBuilder = (): UseBuilderReturn => {
     const uuid = uuidv4();
     switch (type) {
       case "main":
+        const mainCopies = mainList.filter(
+          (c) => c.reference === card.reference
+        );
+        if (mainCopies.length == 3) return notifyCardLimitError();
+
         return setMainList([...mainList, { ...card, uuid, id: uuid }]);
       case "side":
+        const sideCopies = sideList.filter(
+          (c) => c.reference === card.reference
+        );
+        if (sideCopies.length == 3) return notifyCardLimitError();
+
         return setSideList([...sideList, { ...card, uuid, id: uuid }]);
       case "extra":
+        const extraCopies = extraList.filter(
+          (c) => c.reference === card.reference
+        );
+        if (extraCopies.length == 3) return notifyCardLimitError();
+
         return setExtraList([...extraList, { ...card, uuid, id: uuid }]);
       case "custom":
         return setCustomList([...customList, { ...card, uuid, id: uuid }]);
@@ -200,8 +230,8 @@ export const useBuilder = (): UseBuilderReturn => {
     onCheckedSearchFilter,
     onClickAddCard,
     onClickClearList,
+    onClickSortList,
     searchArgs,
     searchResult,
-    onClickSortList,
   };
 };
