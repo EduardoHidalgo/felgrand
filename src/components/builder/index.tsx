@@ -1,10 +1,7 @@
-import {
-  BuilderCardPreview,
-  BuilderCardPreviewProps,
-} from "./cardPreview/index";
+import { BuilderCardDrag, BuilderCardDragProps } from "./cardPreview/index";
 import { CardSearched, CardSearchedProps } from "./cardSearched/index";
 import { BuilderFinder, BuilderFinderProps } from "./finder/index";
-import { BuilderList, BuilderListProps } from "./list/index";
+import { BuilderContainerList, BuilderListProps } from "./containerList/index";
 import {
   BuilderListType,
   BuilderSearchFilter,
@@ -13,15 +10,15 @@ import {
 } from "./types";
 
 export {
-  BuilderCardPreview,
+  BuilderCardDrag as BuilderCardPreview,
   CardSearched,
   BuilderFinder,
-  BuilderList,
+  BuilderContainerList,
   searchArgsDefault,
 };
 
 export type {
-  BuilderCardPreviewProps,
+  BuilderCardDragProps as BuilderCardPreviewProps,
   CardSearchedProps,
   BuilderFinderProps,
   BuilderListProps,

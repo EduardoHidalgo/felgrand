@@ -2,7 +2,7 @@ import { FC } from "react";
 
 import { YugiohCard } from "@/types";
 import { Button } from "@/components/button";
-import { BuilderListType } from "../types";
+import { BuilderListType } from "..";
 
 export interface CardSearchedProps {
   card: YugiohCard;
@@ -20,7 +20,7 @@ export const CardSearched: FC<CardSearchedProps> = ({
       <img className="w-16" src={card.card_images[0].image_url_small} />
       <div className="flex flex-col shrink truncate w-full">
         <span className="truncate">{card.name}</span>
-        <span className="truncate">{card.reference}</span>
+        <span className="truncate">{card.id}</span>
         <span className="truncate">{card.type}</span>
         <span className="truncate">{card.archetype}</span>
       </div>

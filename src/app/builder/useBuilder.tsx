@@ -1,10 +1,21 @@
 "use client";
-import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
+import { Dispatch, SetStateAction, useState } from "react";
+import {
+  DragCancelEvent,
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+} from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { v4 as uuidv4 } from "uuid";
 
-import { YugiohCard } from "@/types";
+import {
+  BuilderList,
+  BuilderListItem,
+  YugiohCard,
+  defaultBuilderList,
+} from "@/types";
+import { BuilderSorting } from "./sortings";
 import { useYugiohDatabase } from "@/hooks/useYugiohDatabase";
 import { Notification, NotificationType } from "@/components/toast";
 import {
@@ -13,28 +24,26 @@ import {
   SearchArgs,
   searchArgsDefault,
 } from "@/components/builder";
-import { BuilderSorting } from "./sortings";
 
 export interface UseBuilderReturn {
+  activeDragId: string | null;
   dragHandlers: {
-    onDragCancel: () => void;
+    onDragCancel: (event: DragCancelEvent) => void;
     onDragEnd: (event: DragEndEvent) => void;
+    onDragOver: (event: DragOverEvent) => void;
     onDragStart: (event: DragStartEvent) => void;
   };
-  lists: {
-    mainList: YugiohCard[];
-    sideList: YugiohCard[];
-    extraList: YugiohCard[];
-    customList: YugiohCard[];
-  };
-  activeId: string | number | null;
   filteredSearch: (search: string) => void;
+  list: BuilderList;
   onCheckedSearchFilter: (value: boolean, type: BuilderSearchFilter) => void;
   onClickAddCard: (card: YugiohCard, type: BuilderListType) => void;
   onClickClearList: (type: BuilderListType) => void;
+  onClickRemoveCard: (type: BuilderListType) => void;
   onClickSortList: (type: BuilderListType) => void;
   searchArgs: SearchArgs;
   searchResult: YugiohCard[];
+  selectedItem: BuilderListItem | null;
+  setList: Dispatch<SetStateAction<BuilderList>>;
 }
 
 export interface UseBuilderProps {
@@ -44,12 +53,20 @@ export interface UseBuilderProps {
 export const useBuilder = ({
   createNotification,
 }: UseBuilderProps): UseBuilderReturn => {
+  const LIST_LIMIT: { [key in BuilderListType]: number } = {
+    custom: 90,
+    extra: 15,
+    main: 60,
+    side: 15,
+  };
+  const TOTAL_CARDS_PER_LEGAL_DECK = 3;
+
   const [searchArgs, setSearchArgs] = useState<SearchArgs>(searchArgsDefault);
-  const [mainList, setMainList] = useState<Array<YugiohCard>>([]);
-  const [extraList, setExtraList] = useState<Array<YugiohCard>>([]);
-  const [sideList, setSideList] = useState<Array<YugiohCard>>([]);
-  const [customList, setCustomList] = useState<Array<YugiohCard>>([]);
-  const [activeId, setActiveId] = useState<number | string | null>(null);
+  const [list, setList] = useState<BuilderList>(defaultBuilderList);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<BuilderListItem | null>(
+    null
+  );
 
   const { searchResult, searchYugiohCards } = useYugiohDatabase({
     ...searchArgs,
@@ -91,147 +108,202 @@ export const useBuilder = ({
     return setSearchArgs({ ...newFilters });
   };
 
-  const onClickSortList = (type: BuilderListType) => {
-    switch (type) {
-      case "main":
-        return setMainList(BuilderSorting.sortMainDeck(mainList));
-      case "extra":
-        return setExtraList(BuilderSorting.sortExtraDeck(extraList));
-      case "side":
-        return setSideList(BuilderSorting.sortSideDeck(sideList));
-      case "custom":
-        return setCustomList(BuilderSorting.sortCustomList(customList));
+  const onClickAddCard = (card: YugiohCard, type: BuilderListType) => {
+    if (
+      type !== "custom" &&
+      list[type].filter((el) => el.card.id === card.id).length ==
+        TOTAL_CARDS_PER_LEGAL_DECK
+    ) {
+      return notifyCardLimitError();
     }
+
+    if (list[type].length == LIST_LIMIT[type]) {
+      return;
+    }
+
+    const id = uuidv4();
+    return setList({
+      ...list,
+      [type]: [...list[type], { card, id }],
+    });
   };
 
-  const onClickAddCard = (card: YugiohCard, type: BuilderListType) => {
-    if (type == "main" && mainList.length >= 60) return;
-    if (type == "extra" && extraList.length >= 15) return;
-    if (type == "side" && sideList.length >= 15) return;
-    if (type == "custom" && customList.length >= 90) return;
-
-    const uuid = uuidv4();
-    switch (type) {
-      case "main":
-        const mainCopies = mainList.filter(
-          (c) => c.reference === card.reference
-        );
-        if (mainCopies.length == 3) return notifyCardLimitError();
-
-        return setMainList([...mainList, { ...card, uuid, id: uuid }]);
-      case "side":
-        const sideCopies = sideList.filter(
-          (c) => c.reference === card.reference
-        );
-        if (sideCopies.length == 3) return notifyCardLimitError();
-
-        return setSideList([...sideList, { ...card, uuid, id: uuid }]);
-      case "extra":
-        const extraCopies = extraList.filter(
-          (c) => c.reference === card.reference
-        );
-        if (extraCopies.length == 3) return notifyCardLimitError();
-
-        return setExtraList([...extraList, { ...card, uuid, id: uuid }]);
-      case "custom":
-        return setCustomList([...customList, { ...card, uuid, id: uuid }]);
-    }
+  const onClickSortList = (type: BuilderListType) => {
+    return setList(BuilderSorting.sortList(list, type));
   };
 
   const onClickClearList = (type: BuilderListType) => {
-    switch (type) {
-      case "custom":
-        return setCustomList([]);
-      case "extra":
-        return setExtraList([]);
-      case "main":
-        return setMainList([]);
-      case "side":
-        return setSideList([]);
+    setList((obj) => {
+      return { ...obj, [type]: [] };
+    });
+  };
+
+  const onClickRemoveCard = (type: BuilderListType) => {
+    if (selectedItem !== null)
+      setList((obj) => {
+        return {
+          ...obj,
+          [type]: obj[type].filter((el) => el.id !== selectedItem.id),
+        };
+      });
+    setSelectedItem(null);
+  };
+
+  /** Fires if a drag operation is cancelled, for example, if the user presses
+   * escape while dragging a draggable item.
+   *
+   * @see https://docs.dndkit.com/api-documentation/context-provider#ondragcancel
+   */
+  const onDragCancel = (event: DragCancelEvent) => {
+    setActiveDragId(null);
+  };
+
+  /** Fires when a drag event that meets the activation constraints for that
+   * sensor happens, along with the unique identifier of the draggable element
+   * that was picked up.
+   *
+   * @see https://docs.dndkit.com/api-documentation/context-provider#ondragstart
+   */
+  const onDragStart = (event: DragStartEvent) => {
+    const id = event.active.id.toString();
+
+    if (event.active.data.current) {
+      const activeContainerId = event.active.data.current.sortable
+        .containerId as BuilderListType;
+
+      const item = list[activeContainerId].find((el) => el.id === id);
+      if (item) setSelectedItem(item);
+
+      setActiveDragId(id);
     }
   };
 
-  const onDragCancel = () => {
-    setActiveId(null);
+  /** Fires after a draggable item is dropped. This event contains information
+   * about the active draggable id along with information on whether the draggable
+   * item was dropped over. If there are no collisions detected when the draggable
+   * item is dropped, the over property will be null. If a collision is detected,
+   * the over property will contain the id of the droppable over which it was
+   * dropped.
+   *
+   * It's important to understand that the onDragEnd event does not move draggable
+   * items into droppable containers.
+   *
+   * @see https://docs.dndkit.com/api-documentation/context-provider#ondragend
+   */
+  const onDragEnd = (_: DragEndEvent) => {
+    return setActiveDragId(null);
   };
 
-  const onDragEnd = (event: DragEndEvent) => {
+  /** Fires when a draggable item is moved over a droppable container, along
+   * with the unique identifier of that droppable container.
+   *
+   * @see https://docs.dndkit.com/api-documentation/context-provider#ondragover
+   */
+  const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
 
-    if (mainList.some((yc) => yc.uuid == active.id)) {
-      if (active.id !== over!.id) {
-        setMainList((cards) => {
-          const oldIndex = cards.findIndex((yc) => yc.id === active.id);
-          const newIndex = cards.findIndex((yc) => yc.id === over!.id);
-          return arrayMove(cards, oldIndex, newIndex);
-        });
+    try {
+      // Both active and over has data, that means two items collided. Otherwise
+      // should drop into the container without over item collision.
+      if (active.data.current && over && over.data.current) {
+        const activeContainerId = active.data.current.sortable
+          .containerId as BuilderListType;
 
-        return setActiveId(null);
-      } else return setActiveId(null);
+        const overContainerId = over.data.current.sortable
+          .containerId as BuilderListType;
+
+        // If containers are equal, just switch positions
+        if (activeContainerId === overContainerId) {
+          if (active.id !== over.id) {
+            return setList((obj) => {
+              const oldIndex = obj[activeContainerId].findIndex(
+                (el) => el.id === active.id
+              );
+              const newIndex = obj[overContainerId].findIndex(
+                (el) => el.id === over!.id
+              );
+              return {
+                ...obj,
+                [activeContainerId]: arrayMove(
+                  obj[activeContainerId],
+                  oldIndex,
+                  newIndex
+                ),
+              };
+            });
+          }
+        }
+
+        // If containers are different, remove item  in active container and
+        // transfer to overContainer.
+        if (activeContainerId !== overContainerId) {
+          const activeIndex = list[activeContainerId].findIndex(
+            (el) => el.id == active.id
+          );
+
+          let activeList = Array.from(list[activeContainerId]);
+          let overList = Array.from(list[overContainerId]);
+
+          overList.splice(activeIndex, 0, activeList[activeIndex]);
+          activeList.splice(activeIndex, 1);
+
+          setList({
+            ...list,
+            [activeContainerId]: activeList,
+            [overContainerId]: overList,
+          });
+        }
+      } else {
+        const activeContainerId = active.data.current!.sortable
+          .containerId as BuilderListType;
+
+        const overContainerId = over!.id as BuilderListType;
+
+        // Safe validation
+        if (activeContainerId && overContainerId) {
+          const activeIndex = list[activeContainerId].findIndex(
+            (el) => el.id == active.id
+          );
+
+          let activeList = Array.from(list[activeContainerId]);
+          let overList = Array.from(list[overContainerId]);
+          let item = activeList[activeIndex];
+
+          if (overList.includes(item)) return;
+
+          overList.push(item);
+          activeList.splice(activeIndex, 1);
+
+          setList({
+            ...list,
+            [activeContainerId]: activeList,
+            [overContainerId]: overList,
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
-
-    if (extraList.some((yc) => yc.uuid == active.id)) {
-      if (active.id !== over!.id) {
-        setExtraList((cards) => {
-          const oldIndex = cards.findIndex((yc) => yc.id === active.id);
-          const newIndex = cards.findIndex((yc) => yc.id === over!.id);
-          return arrayMove(cards, oldIndex, newIndex);
-        });
-
-        return setActiveId(null);
-      } else return setActiveId(null);
-    }
-
-    if (sideList.some((yc) => yc.uuid == active.id)) {
-      if (active.id !== over!.id) {
-        setSideList((cards) => {
-          const oldIndex = cards.findIndex((yc) => yc.id === active.id);
-          const newIndex = cards.findIndex((yc) => yc.id === over!.id);
-          return arrayMove(cards, oldIndex, newIndex);
-        });
-
-        return setActiveId(null);
-      } else return setActiveId(null);
-    }
-
-    if (customList.some((yc) => yc.uuid == active.id)) {
-      if (active.id !== over!.id) {
-        setCustomList((cards) => {
-          const oldIndex = cards.findIndex((yc) => yc.id === active.id);
-          const newIndex = cards.findIndex((yc) => yc.id === over!.id);
-          return arrayMove(cards, oldIndex, newIndex);
-        });
-
-        return setActiveId(null);
-      } else return setActiveId(null);
-    }
-
-    return setActiveId(null);
-  };
-
-  const onDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id.toString());
   };
 
   return {
+    activeDragId,
     dragHandlers: {
       onDragCancel,
       onDragEnd,
       onDragStart,
+      onDragOver,
     },
-    lists: {
-      mainList,
-      sideList,
-      extraList,
-      customList,
-    },
-    activeId,
     filteredSearch,
+    list,
     onCheckedSearchFilter,
     onClickAddCard,
     onClickClearList,
+    onClickRemoveCard,
     onClickSortList,
     searchArgs,
     searchResult,
+    selectedItem,
+    setList,
   };
 };

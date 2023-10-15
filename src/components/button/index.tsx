@@ -1,16 +1,28 @@
+import classNames from "classnames";
 import { FC } from "react";
 
 export interface ButtonProps {
+  disabled?: boolean;
   label: string;
   onClick: () => void;
 }
 
-export const Button: FC<ButtonProps> = ({ label, onClick }) => {
+export const Button: FC<ButtonProps> = ({ disabled, label, onClick }) => {
+  const onClickHandler = () => {
+    if (!disabled) onClick();
+  };
+
   return (
     <button
-      onClick={onClick}
+      disabled={disabled}
+      onClick={() => onClickHandler()}
       type="button"
-      className="rounded bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+      className={classNames(
+        "rounded px-2 py-1 text-xs font-semibold shadow-sm ring-1 ring-inset ring-gray-300",
+        disabled
+          ? "bg-orange-50 text-gray-400"
+          : "hover:bg-orange-400 text-gray-900 bg-orange-300"
+      )}
     >
       {label}
     </button>

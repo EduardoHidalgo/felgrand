@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import { YugiohCard, YugiohDatabase } from "@/types";
 import data from "../../public/database.json";
@@ -60,12 +59,7 @@ export function useYugiohDatabase({ filters, sort }: UseYugiohDatabaseProps) {
       return false;
     });
 
-    setSearchResult(
-      founds.map((c) => {
-        const uuid = uuidv4();
-        return { ...c, uuid, id: uuid, reference: Number(c.id) };
-      })
-    );
+    setSearchResult(founds);
   };
 
   const ifIncludes = (field: string | number, search: string) => {

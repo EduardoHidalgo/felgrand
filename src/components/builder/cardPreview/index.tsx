@@ -4,30 +4,52 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import classNames from "classnames";
 
-import { YugiohCard } from "@/types";
+import { BuilderListItem } from "@/types";
 
-export interface BuilderCardPreviewProps {
-  activeId: number | string | null;
-  card: YugiohCard;
+export interface BuilderCardDragProps {
+  activeDragId: string | null;
+  item: BuilderListItem;
+  selectedItem: BuilderListItem | null;
 }
 
-export const BuilderCardPreview: FC<BuilderCardPreviewProps> = ({
-  activeId,
-  card,
+export const BuilderCardDrag: FC<BuilderCardDragProps> = ({
+  activeDragId,
+  item,
+  selectedItem,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: card.id });
+    useSortable({ id: item.id });
 
-  const isActive = activeId !== null && card.id === activeId;
+  const isDragged = activeDragId !== null && item.id === activeDragId;
+  const isSelected = selectedItem !== null && item.id === selectedItem.id;
+
+  const onPointerDown = (e: any) => {
+    listeners!.onPointerDown(e, item.id);
+  };
+
+  const onKeyDown = (e: any) => {
+    listeners!.onKeyDown(e, item.id);
+  };
 
   return (
-    <img
-      className={classNames("h-24 w-16", isActive && "z-10")}
-      src={card.card_images[0].image_url_small}
+    <div
+      className={classNames("relative h-24 w-16", isDragged && "z-10")}
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       {...attributes}
-      {...listeners}
-    />
+      onPointerDown={(e) => onPointerDown(e)}
+      onKeyDown={(e) => onKeyDown(e)}
+    >
+      <div
+        className={classNames(
+          "absolute h-24 w-16 m-auto",
+          (isDragged || isSelected) && "border-4 border-red-500 z-20"
+        )}
+      />
+      <img
+        className={classNames("h-24 w-16")}
+        src={item.card.card_images[0].image_url_small}
+      />
+    </div>
   );
 };

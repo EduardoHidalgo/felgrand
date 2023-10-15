@@ -1,28 +1,42 @@
+import { BuilderListType } from "@/components/builder";
+
+export const defaultBuilderList = {
+  custom: [],
+  extra: [],
+  main: [],
+  side: [],
+};
+
+export type BuilderList = { [key in BuilderListType]: Array<BuilderListItem> };
+
+export type BuilderListItem = {
+  card: YugiohCard;
+  id: string;
+};
+
 export interface YugiohDatabase {
   data: YugiohCard[];
 }
 
 export interface YugiohCard {
-  uuid: string;
-  id: string;
-  reference: number;
-  name: string;
-  type: CardType;
-  frameType: FrameType;
-  desc: string;
-  race: Race;
   archetype?: string;
-  card_sets?: CardSet[];
+  atk?: number;
+  attribute?: Attribute;
+  banlist_info?: BanlistInfo;
   card_images: CardImage[];
   card_prices: CardPrice[];
-  atk?: number;
+  card_sets?: CardSet[];
   def?: number;
+  desc: string;
+  frameType: FrameType;
+  id: number;
   level?: number;
-  attribute?: Attribute;
-  scale?: number;
-  linkval?: number;
   linkmarkers?: Linkmarker[];
-  banlist_info?: BanlistInfo;
+  linkval?: number;
+  name: string;
+  race: Race;
+  scale?: number;
+  type: CardType;
 }
 
 export enum Attribute {
