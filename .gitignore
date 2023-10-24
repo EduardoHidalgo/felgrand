@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 yarn.lock
+.yarnrc.yml
 
 # testing
 /coverage
@@ -12,6 +13,7 @@ yarn.lock
 # next.js
 /.next/
 /out/
+*.env
 
 # production
 /build
@@ -19,6 +21,7 @@ yarn.lock
 # misc
 .DS_Store
 *.pem
+*.log
 
 # debug
 npm-debug.log*
