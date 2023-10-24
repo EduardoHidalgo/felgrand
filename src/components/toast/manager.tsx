@@ -1,7 +1,7 @@
 "use client";
 import React, { FC, ReactNode, useEffect, useMemo, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { createPortal } from "react-dom";
+import { v4 as uuidv4 } from "uuid";
 
 import { Toast } from "./toast";
 import { Notification } from "./types";
@@ -35,7 +35,7 @@ export const NotificationProvider: FC<NotificationProviderProps> = ({
     <NotificationsContext.Provider value={contextValue}>
       {children}
       {mounted &&
-        createPortal(
+        (createPortal(
           <div
             aria-live="assertive"
             className="pointer-events-none fixed inset-0 flex flex-col-reverse gap-2 px-4 py-6"
@@ -49,7 +49,7 @@ export const NotificationProvider: FC<NotificationProviderProps> = ({
             ))}
           </div>,
           document.body
-        )}
+        ) as ReactNode)}
     </NotificationsContext.Provider>
   );
 };
