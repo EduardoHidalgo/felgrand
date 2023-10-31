@@ -9,7 +9,7 @@ import { TcgCard } from "@/components/tcgCard";
 import data from "../../../public/database.json";
 
 export default function ListPagr() {
-  const LIST_LIMIT = 100;
+  const LIST_LIMIT = 1500;
   const SEARCHABLE_LENGTH = 3;
   const database: YugiohDatabase = data as unknown as YugiohDatabase;
 
@@ -52,6 +52,10 @@ export default function ListPagr() {
         return true;
       }
       if (String(card.archetype).toLowerCase().includes(search)) {
+        count++;
+        return true;
+      }
+      if (String(card.desc).toLowerCase().includes(search)) {
         count++;
         return true;
       }
