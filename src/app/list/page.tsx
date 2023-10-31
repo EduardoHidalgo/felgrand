@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { ClipboardIcon } from "@heroicons/react/24/outline";
 
 import { YugiohCard, YugiohDatabase } from "@/types";
 import { Datatable } from "@/components/datatable";
@@ -65,9 +66,13 @@ export default function ListPagr() {
     setSelectedCard(list[index]);
   };
 
+  const onClickCopyToClipboard = async (value: string) => {
+    await navigator.clipboard.writeText(value);
+  };
+
   return (
-    <main className="flex flex-row">
-      <div className="flex flex-col w-full">
+    <main className="flex flex-row overflow-x-auto min-w-[96rem]">
+      <div className="flex flex-col tcglist:max-w-[calc(100vw-38rem)] w-full">
         <SearchBar fetchData={fetchData} />
         <Datatable>
           <Datatable.Head headers={headers} />
@@ -79,20 +84,25 @@ export default function ListPagr() {
                 onClickRow={onClickRow}
               >
                 <Datatable.Data>{card.id}</Datatable.Data>
-                <Datatable.Data>{card.name}</Datatable.Data>
+                <Datatable.Data>
+                  {card.name}
+                  <ClipboardIcon
+                    className="w-4 h-4 hover:cursor-pointer hover:scale-125 transition-all text-gray-600 hover:text-black"
+                    onClick={() => onClickCopyToClipboard(card.name)}
+                  />
+                </Datatable.Data>
                 <Datatable.Data>{card.type}</Datatable.Data>
                 <Datatable.Data>{card.frameType}</Datatable.Data>
                 <Datatable.Data>{card.race}</Datatable.Data>
                 <Datatable.Data>
                   {card.archetype ? card.archetype : ""}
                 </Datatable.Data>
-                {/* <Datatable.Data>{card.desc}</Datatable.Data> */}
               </Datatable.Row>
             ))}
           </Datatable.Body>
         </Datatable>
       </div>
-      <div className="flex flex-col w-[512px]">
+      <div className="flex flex-col max-w-xl relative tcglist:fixed tcglist:right-0 tcglist:overflow-y-scroll tcglist:overflow-x-hidden tcglist:h-full">
         {selectedCard ? (
           <TcgCard card={selectedCard} />
         ) : (

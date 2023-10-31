@@ -6,8 +6,10 @@ export interface TableDataProps {
 
 export const TableData: FC<TableDataProps> = ({ children }) => {
   return (
-    <td className="whitespace-nowrap px-2 py-2 text-sm text-gray-900">
-      {children}
+    <td className=" whitespace-nowrap px-2 py-2 text-sm text-gray-900">
+      <div className="flex flex-row justify-between w-full gap-2">
+        {children}
+      </div>
     </td>
   );
 };
