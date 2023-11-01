@@ -13,14 +13,7 @@ export default function ListPagr() {
   const SEARCHABLE_LENGTH = 3;
   const database: YugiohDatabase = data as unknown as YugiohDatabase;
 
-  const headers: Array<string> = [
-    "id",
-    "name",
-    "type",
-    "frameType",
-    "race",
-    "archetype",
-  ];
+  const headers: Array<string> = ["id", "name", "type", "race", "archetype"];
 
   const [list, setList] = useState<Array<YugiohCard>>([]);
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
@@ -85,7 +78,7 @@ export default function ListPagr() {
   };
 
   return (
-    <main className="flex flex-row overflow-x-auto min-w-[96rem]">
+    <main className="flex flex-row overflow-x-auto min-w-[68rem] gap-2">
       <div className="flex flex-col tcglist:max-w-[calc(100vw-38rem)] w-full">
         <SearchBar fetchData={fetchData} />
         <Datatable>
@@ -106,7 +99,6 @@ export default function ListPagr() {
                   />
                 </Datatable.Data>
                 <Datatable.Data>{card.type}</Datatable.Data>
-                <Datatable.Data>{card.frameType}</Datatable.Data>
                 <Datatable.Data>{card.race}</Datatable.Data>
                 <Datatable.Data>
                   {card.archetype ? card.archetype : ""}
