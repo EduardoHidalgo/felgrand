@@ -31,6 +31,7 @@ export default function ListPagr() {
     }
 
     let count = 0;
+    let hasSelectedByName = false;
     let search = searchValue.toLowerCase();
     const founds = database.data.filter((card) => {
       if (count >= LIST_LIMIT) return false;
@@ -40,6 +41,11 @@ export default function ListPagr() {
         return true;
       }
       if (String(card.name).toLowerCase().includes(search)) {
+        if (search === card.name.toLowerCase()) {
+          hasSelectedByName = true;
+          setSelectedCard(card);
+        }
+
         count++;
         return true;
       }
@@ -62,6 +68,10 @@ export default function ListPagr() {
 
       return false;
     });
+
+    if (hasSelectedByName === false) {
+      setSelectedCard(founds[0]);
+    }
 
     setList(founds);
   };
