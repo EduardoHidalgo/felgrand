@@ -1,5 +1,12 @@
 import { BuilderListType } from "@/components/builder";
 
+export enum AsyncState {
+  Error = "Error",
+  Initial = "Initial",
+  Loading = "Loading",
+  Success = "Success",
+}
+
 export const defaultBuilderList = {
   custom: [],
   extra: [],

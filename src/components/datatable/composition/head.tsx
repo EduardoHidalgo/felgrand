@@ -10,7 +10,7 @@ export const TableHead: FC<TableHeadProps> = ({ headers }) => {
       <tr>
         {headers.map((header, index) => (
           <th
-            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+            className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold bg-gray-900"
             key={`th-${index}`}
             scope={"col"}
           >

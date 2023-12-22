@@ -5,7 +5,5 @@ export interface TableBodyProps {
 }
 
 export const TableBody: FC<TableBodyProps> = ({ children }) => {
-  return (
-    <tbody className="divide-y divide-gray-200 bg-white">{children}</tbody>
-  );
+  return <tbody className="divide-y divide-gray-200">{children}</tbody>;
 };

@@ -24,7 +24,7 @@ export const SearchBar: FC<SearchBarProps> = ({ fetchData }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full py-2">
       <label htmlFor="search" className="sr-only">
         Search
       </label>
@@ -36,7 +36,7 @@ export const SearchBar: FC<SearchBarProps> = ({ fetchData }) => {
           />
         </div>
         <input
-          className="block w-full text-gray-600 outline-gray-500 rounded-md border border-gray-300 bg-white py-1.5 pl-10 pr-3 placeholder:text-gray-400 focus:bg-white focus:placeholder:text-gray-500 sm:text-sm sm:leading-6"
+          className="block w-full text-gray-200 bg-transparent outline-gray-500 rounded-md border border-gray-300 py-1.5 pl-10 pr-3"
           id="search"
           name="search"
           onChange={(e) => onChange(e)}

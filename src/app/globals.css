@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: light dark;
+}
+
 html,
 body,
 #__next {
   height: 100%;
+}
+
+.inner-html a {
+  @apply text-red-300 cursor-pointer;
 }
