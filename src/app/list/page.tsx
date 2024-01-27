@@ -34,7 +34,7 @@ export default function ListPagr() {
       setTips({ ...tips, state: AsyncState.Loading });
       setRulings({ ...rulings, state: AsyncState.Loading });
 
-      fetchTips(selectedCard);
+       fetchTips(selectedCard);
       fetchRulings(selectedCard);
     }
   }, [selectedCard]);
@@ -46,6 +46,8 @@ export default function ListPagr() {
     if (response.ok) {
       const data = (await response.json()) as { html: string };
       setTips({ html: data.html, state: AsyncState.Success });
+    } else {
+      setTips({ html: null, state: AsyncState.Error });
     }
   };
 
@@ -56,11 +58,16 @@ export default function ListPagr() {
     if (response.ok) {
       const data = (await response.json()) as { html: string };
       setRulings({ html: data.html, state: AsyncState.Success });
+    } else {
+      setRulings({ html: null, state: AsyncState.Error });
     }
   };
 
   const fetchData = async (searchValue: string) => {
     if (searchValue === "" || searchValue.length < SEARCHABLE_LENGTH) {
+      setSelectedCard(null);
+      setTips({ html: null, state: AsyncState.Initial });
+      setRulings({ html: null, state: AsyncState.Initial });
       return setList([]);
     }
 
@@ -94,6 +101,20 @@ export default function ListPagr() {
       if (String(card.desc).toLowerCase().includes(search)) {
         count++;
         return true;
+      }
+      if (card.card_sets) {
+        for (let index = 0; index < card.card_sets.length; index++) {
+          const set = card.card_sets[index];
+          if (String(set.set_name).toLowerCase().includes(search)) {
+            count++;
+            return true;
+          }
+
+          if (String(set.set_code).toLowerCase().includes(search)) {
+            count++;
+            return true;
+          }
+        }
       }
 
       return false;
@@ -150,7 +171,7 @@ export default function ListPagr() {
                   {card.archetype && (
                     <ClipboardIcon
                       className="w-4 h-4 hover:cursor-pointer hover:scale-125 transition-all text-gray-200 hover:text-gray-50"
-                      onClick={() => onClickCopyToClipboard(card.name)}
+                      onClick={() => onClickCopyToClipboard(card.archetype!)}
                     />
                   )}
                 </Datatable.Data>
@@ -159,7 +180,7 @@ export default function ListPagr() {
           </Datatable.Body>
         </Datatable>
       </div>
-      <div className="flex flex-col mt-2 max-w-[calc(50vw-24px)] fixed right-0 overflow-y-scroll overflow-x-hidden h-full w-full">
+      <div className="flex flex-col pt-2 pb-12 max-w-[calc(50vw-24px)] fixed right-0 overflow-y-scroll overflow-x-hidden h-full w-full">
         {selectedCard ? (
           <TcgCard card={selectedCard} tips={tips} rulings={rulings} />
         ) : (

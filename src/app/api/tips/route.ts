@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import puppeteer from "puppeteer";
+import { chromium } from "@playwright/test";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -8,14 +8,12 @@ export async function GET(request: NextRequest) {
   if (cardName == null || cardName == "")
     return Response.json({}, { status: 400 });
 
-  const browser = await puppeteer.launch({
-    headless: "new",
-  });
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
   const cardNameUrified = cardName.replace(" ", "_");
   await page.goto(`https://yugipedia.com/wiki/Card_Tips:${cardNameUrified}`, {
-    waitUntil: "networkidle2",
+    waitUntil: "load",
   });
 
   const element = await page.waitForSelector("#mw-content-text > div");
@@ -29,11 +27,20 @@ export async function GET(request: NextRequest) {
       selector.querySelectorAll("h2").forEach((el) => el.remove());
       selector.querySelectorAll("style").forEach((el) => el.remove());
       selector.querySelectorAll("table").forEach((el) => el.remove());
-      selector.querySelector(".mw-references-wrap")?.remove();
+      selector
+        .querySelectorAll(".mw-references-wrap")
+        .forEach((el) => el.remove());
+
+      selector.childNodes.forEach((node) => {
+        if (node.nodeType == 1) {
+          const el = node as HTMLElement;
+          el.removeAttribute("style");
+        }
+      });
 
       if (selector.hasChildNodes() == false) return null;
 
-      return selector.innerHTML;
+      return selector.innerHTML.toString();
     });
 
     if (html == null) return Response.json({ html: null }, { status: 200 });
@@ -41,7 +48,11 @@ export async function GET(request: NextRequest) {
     if (html.includes("There is currently no text in this page"))
       return Response.json({ html: null }, { status: 200 });
 
-    html.replace("/wiki", "https://yugipedia.com/wiki");
+    html = html.replace(new RegExp(/(\/wiki)/g), "https://yugipedia.com/wiki");
+    html = html.replace(
+      new RegExp(/(href=\"https:\/)/g),
+      'target="_blank" href="https:/'
+    );
 
     return Response.json({ html: JSON.stringify(html) });
   }

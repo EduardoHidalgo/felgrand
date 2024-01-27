@@ -38,7 +38,7 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
 
   return (
     <div className="flex flex-col w-full gap-2 items-center">
-      <img className="w-64" src={card.card_images[0].image_url} />
+      <img className="w-80" src={card.card_images[0].image_url} />
       <div className="w-full flex flex-col">
         <h2 className="font-semibold text-xl mb-2">{card.name}</h2>
         <div className="flex flex-row justify-start gap-8">
