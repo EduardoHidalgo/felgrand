@@ -16,7 +16,7 @@ export const BuilderFinder: FC<BuilderFinderProps> = ({
   searchArgs,
 }) => {
   return (
-    <div className="grid grid-cols-8 w-full">
+    <div className="grid w-full grid-cols-8">
       <div className="col-span-2">
         <SearchBar fetchData={filteredSearch} />
       </div>

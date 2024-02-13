@@ -7,7 +7,7 @@ import { useBuilder } from "./useBuilder";
 
 export default function ListBuilderPage() {
   return (
-    <main className="flex flex-row min-h-full">
+    <main className="flex min-h-full flex-row">
       <NotificationProvider>
         <ListBuilderContainer />
       </NotificationProvider>

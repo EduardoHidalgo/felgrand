@@ -4,7 +4,7 @@ import { BuilderListType } from "@/components/builder";
 export class BuilderSorting {
   public static sortList(
     list: BuilderList,
-    type: BuilderListType
+    type: BuilderListType,
   ): BuilderList {
     let sortedList: Array<BuilderListItem> = [];
     switch (type) {
@@ -56,19 +56,19 @@ export class BuilderSorting {
 
   private static sortMonsters(list: Array<BuilderListItem>) {
     const effects = this.fieldSorter(
-      list.filter((el) => el.card.frameType == FrameType.Effect)
+      list.filter((el) => el.card.frameType == FrameType.Effect),
     );
     const normals = this.fieldSorter(
-      list.filter((el) => el.card.frameType == FrameType.Normal)
+      list.filter((el) => el.card.frameType == FrameType.Normal),
     );
     const pendulums = this.fieldSorter(
-      list.filter((el) => el.card.frameType == FrameType.EffectPendulum)
+      list.filter((el) => el.card.frameType == FrameType.EffectPendulum),
     );
     const ritualPendulums = this.fieldSorter(
-      list.filter((el) => el.card.frameType == FrameType.RitualPendulum)
+      list.filter((el) => el.card.frameType == FrameType.RitualPendulum),
     );
     const normalPendulums = this.fieldSorter(
-      list.filter((el) => el.card.frameType == FrameType.NormalPendulum)
+      list.filter((el) => el.card.frameType == FrameType.NormalPendulum),
     );
 
     return [
@@ -82,10 +82,10 @@ export class BuilderSorting {
 
   private static sortSpellsTraps(list: Array<BuilderListItem>) {
     const spells = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.Spell)
+      list.filter(({ card }) => card.frameType == FrameType.Spell),
     );
     const traps = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.Trap)
+      list.filter(({ card }) => card.frameType == FrameType.Trap),
     );
 
     return [...spells, ...traps];
@@ -93,25 +93,25 @@ export class BuilderSorting {
 
   private static SortExtraTypes(list: Array<BuilderListItem>) {
     const fusionPendulums = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.FusionPendulum)
+      list.filter(({ card }) => card.frameType == FrameType.FusionPendulum),
     );
     const fusions = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.Fusion)
+      list.filter(({ card }) => card.frameType == FrameType.Fusion),
     );
     const synchroPendulums = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.SynchroPendulum)
+      list.filter(({ card }) => card.frameType == FrameType.SynchroPendulum),
     );
     const synchros = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.Synchro)
+      list.filter(({ card }) => card.frameType == FrameType.Synchro),
     );
     const xyzPendulums = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.XyzPendulum)
+      list.filter(({ card }) => card.frameType == FrameType.XyzPendulum),
     );
     const xyzs = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.Xyz)
+      list.filter(({ card }) => card.frameType == FrameType.Xyz),
     );
     const links = this.fieldSorter(
-      list.filter(({ card }) => card.frameType == FrameType.Link)
+      list.filter(({ card }) => card.frameType == FrameType.Link),
     );
 
     return [
@@ -137,7 +137,7 @@ export class BuilderSorting {
       (a, b) =>
         this.compareByLevel(a, b) ||
         this.compareByAttack(a, b) ||
-        this.compareByName(a, b)
+        this.compareByName(a, b),
     );
   }
 

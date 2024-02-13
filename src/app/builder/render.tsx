@@ -45,7 +45,7 @@ export const BuilderRender: FC<BuilderRender> = ({
       {/* width calculation: each card has 64px, and the BuilderContainerList 
       can have 15 card per row. 64x15 = 960. The remaining size to complete 
       987px was added manually to prevent cards overlaping each other. */}
-      <div className="flex flex-col w-[987px] min-w-[987px] h-[100vh] overflow-y-scroll">
+      <div className="flex h-[100vh] w-[987px] min-w-[987px] flex-col overflow-y-scroll">
         <BuilderFinder
           filteredSearch={filteredSearch}
           onCheckedSearchFilter={onCheckedSearchFilter}
@@ -55,25 +55,25 @@ export const BuilderRender: FC<BuilderRender> = ({
           <DndContext collisionDetection={rectIntersection} {...dragHandlers}>
             <BuilderContainerList
               {...builderListProps}
-              className="grid-rows-4 h-[384px]"
+              className="h-[384px] grid-rows-4"
               title="Deck"
               type="main"
             />
             <BuilderContainerList
               {...builderListProps}
-              className="grid-rows-1 h-[96px]"
+              className="h-[96px] grid-rows-1"
               title="Extra Deck"
               type="extra"
             />
             <BuilderContainerList
               {...builderListProps}
-              className="grid-rows-1 h-[96px]"
+              className="h-[96px] grid-rows-1"
               title="Side Deck"
               type="side"
             />
             <BuilderContainerList
               {...builderListProps}
-              className="grid-rows-6 h-[576px]"
+              className="h-[576px] grid-rows-6"
               title="Custom List"
               type="custom"
             />
@@ -89,7 +89,7 @@ export const BuilderRender: FC<BuilderRender> = ({
           </DndContext>
         </div>
       </div>
-      <div className="flex flex-col w-full h-[100vh] min-w-[500px] overflow-y-scroll gap-1 p-2">
+      <div className="flex h-[100vh] w-full min-w-[500px] flex-col gap-1 overflow-y-scroll p-2">
         {searchResult.map((card) => (
           <CardSearched
             key={card.id}

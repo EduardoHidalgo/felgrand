@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     `https://yugipedia.com/wiki/Card_Rulings:${cardNameUrified}`,
     {
       waitUntil: "load",
-    }
+    },
   );
 
   const element = await page.waitForSelector("#mw-content-text > div");
@@ -51,14 +51,18 @@ export async function GET(request: NextRequest) {
     if (html.includes("There is currently no text in this page"))
       return Response.json({ html: null }, { status: 200 });
 
-    html = html.replace(new RegExp(/(\/wiki)/g), "https://yugipedia.com/wiki");
+    html = html.replace(new RegExp(/(\/wiki\/)/g), "/list?search=");
     html = html.replace(
-      new RegExp(/(href=\"https:\/)/g),
-      'target="_blank" href="https:/'
+      new RegExp(/(href=\"\/list)/g),
+      'target="_blank" href="/list',
     );
+
+    await browser.close();
 
     return Response.json({ html: JSON.stringify(html) });
   }
+
+  await browser.close();
 
   return Response.json({ html: null }, { status: 400 });
 }

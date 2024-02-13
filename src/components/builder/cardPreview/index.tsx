@@ -42,8 +42,8 @@ export const BuilderCardDrag: FC<BuilderCardDragProps> = ({
     >
       <div
         className={classNames(
-          "absolute h-24 w-16 m-auto",
-          (isDragged || isSelected) && "border-4 border-red-500 z-20"
+          "absolute m-auto h-24 w-16",
+          (isDragged || isSelected) && "z-20 border-4 border-red-500",
         )}
       />
       <img

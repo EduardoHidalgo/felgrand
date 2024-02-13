@@ -5,9 +5,10 @@ import { useDebounce } from "./useDebounce";
 
 export interface SearchBarProps {
   fetchData: (searchValue: string) => void;
+  initialValue?: string | null;
 }
 
-export const SearchBar: FC<SearchBarProps> = ({ fetchData }) => {
+export const SearchBar: FC<SearchBarProps> = ({ fetchData, initialValue }) => {
   const [inputValue, setInputValue] = useState("");
   const debouncedValue = useDebounce<string>(inputValue);
 
@@ -36,9 +37,10 @@ export const SearchBar: FC<SearchBarProps> = ({ fetchData }) => {
           />
         </div>
         <input
-          className="block w-full text-gray-200 bg-transparent outline-gray-500 rounded-md border border-gray-300 py-1.5 pl-10 pr-3"
+          className="block w-full rounded-md border border-gray-300 bg-transparent py-1.5 pl-10 pr-3 text-gray-200 outline-gray-500"
           id="search"
           name="search"
+          defaultValue={initialValue ? initialValue : ""}
           onChange={(e) => onChange(e)}
           placeholder="Search"
           type="search"

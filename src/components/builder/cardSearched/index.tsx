@@ -18,7 +18,7 @@ export const CardSearched: FC<CardSearchedProps> = ({
   return (
     <div className="flex flex-row gap-2 border border-gray-400 p-1">
       <img className="w-16" src={card.card_images[0].image_url_small} />
-      <div className="flex flex-col shrink truncate w-full">
+      <div className="flex w-full shrink flex-col truncate">
         <span className="truncate">{card.name}</span>
         <span className="truncate">{card.id}</span>
         <span className="truncate">{card.type}</span>

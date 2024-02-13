@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ClipboardIcon } from "@heroicons/react/24/outline";
 
 import { AsyncState, YugiohCard, YugiohDatabase } from "@/types";
 import { Datatable } from "@/components/datatable";
 import { SearchBar } from "@/components/searchbar";
 import { TcgCard } from "@/components/tcgCard";
+
 import data from "../../../public/database.json";
 
-export default function ListPagr() {
+export default function ListPage() {
   const LIST_LIMIT = 1500;
   const SEARCHABLE_LENGTH = 3;
   const database: YugiohDatabase = data as unknown as YugiohDatabase;
@@ -29,12 +31,23 @@ export default function ListPagr() {
     state: AsyncState.Initial,
   });
 
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchParam = searchParams.get("search");
+
   useEffect(() => {
-    if (selectedCard !== null) {
+    if (selectedCard == null && searchParam != null) {
+      fetchData(searchParam.replaceAll("_", " "));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedCard !== null && selectedCard !== undefined) {
       setTips({ ...tips, state: AsyncState.Loading });
       setRulings({ ...rulings, state: AsyncState.Loading });
 
-       fetchTips(selectedCard);
+      fetchTips(selectedCard);
       fetchRulings(selectedCard);
     }
   }, [selectedCard]);
@@ -68,7 +81,10 @@ export default function ListPagr() {
       setSelectedCard(null);
       setTips({ html: null, state: AsyncState.Initial });
       setRulings({ html: null, state: AsyncState.Initial });
-      return setList([]);
+      setList([]);
+      router.push(pathname);
+
+      return;
     }
 
     let count = 0;
@@ -124,7 +140,15 @@ export default function ListPagr() {
       setSelectedCard(founds[0]);
     }
 
+    if (founds.length == 0) {
+      setSelectedCard(null);
+    }
+
     setList(founds);
+
+    const params = new URLSearchParams();
+    params.set("search", search);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const onClickRow = async (index: number) => {
@@ -142,9 +166,9 @@ export default function ListPagr() {
   };
 
   return (
-    <main className="flex flex-row overflow-x-auto gap-2">
-      <div className="flex flex-col max-w-[50vw] w-full">
-        <SearchBar fetchData={fetchData} />
+    <main className="">
+      <div className="fixed left-0 flex h-full w-[60vw] max-w-[60vw] flex-col overflow-x-hidden overflow-y-scroll px-2">
+        <SearchBar fetchData={fetchData} initialValue={searchParam} />
         <Datatable>
           <Datatable.Head headers={headers} />
           <Datatable.Body>
@@ -160,7 +184,7 @@ export default function ListPagr() {
                 <Datatable.Data>
                   {card.name}
                   <ClipboardIcon
-                    className="w-4 h-4 hover:cursor-pointer hover:scale-125 transition-all text-gray-200 hover:text-gray-50"
+                    className="h-4 w-4 text-gray-200 transition-all hover:scale-125 hover:cursor-pointer hover:text-gray-50"
                     onClick={() => onClickCopyToClipboard(card.name)}
                   />
                 </Datatable.Data>
@@ -170,7 +194,7 @@ export default function ListPagr() {
                   {card.archetype ? card.archetype : ""}
                   {card.archetype && (
                     <ClipboardIcon
-                      className="w-4 h-4 hover:cursor-pointer hover:scale-125 transition-all text-gray-200 hover:text-gray-50"
+                      className="h-4 w-4 text-gray-200 transition-all hover:scale-125 hover:cursor-pointer hover:text-gray-50"
                       onClick={() => onClickCopyToClipboard(card.archetype!)}
                     />
                   )}
@@ -180,7 +204,7 @@ export default function ListPagr() {
           </Datatable.Body>
         </Datatable>
       </div>
-      <div className="flex flex-col pt-2 pb-12 max-w-[calc(50vw-24px)] fixed right-0 overflow-y-scroll overflow-x-hidden h-full w-full">
+      <div className="fixed right-0 flex h-full w-[40vw] flex-col overflow-x-hidden overflow-y-scroll pb-12 pt-2">
         {selectedCard ? (
           <TcgCard card={selectedCard} tips={tips} rulings={rulings} />
         ) : (

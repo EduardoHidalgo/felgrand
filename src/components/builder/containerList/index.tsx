@@ -38,7 +38,7 @@ export const BuilderContainerList: FC<BuilderListProps> = ({
 
   return (
     <div className="m-1">
-      <div className="flex flex-row justify-between mb-1">
+      <div className="mb-1 flex flex-row justify-between">
         <h2>{title}</h2>
         <div className="flex flex-row gap-2">
           <Button
@@ -58,7 +58,7 @@ export const BuilderContainerList: FC<BuilderListProps> = ({
           className={classNames(
             "grid grid-cols-15 border border-black",
             isOver && "border border-red-400",
-            className
+            className,
           )}
           ref={setNodeRef}
         >
@@ -71,7 +71,7 @@ export const BuilderContainerList: FC<BuilderListProps> = ({
                   activeDragId={activeDragId}
                   selectedItem={selectedItem}
                 />
-              )
+              ),
           )}
         </div>
       </SortableContext>

@@ -65,7 +65,7 @@ export const useBuilder = ({
   const [list, setList] = useState<BuilderList>(defaultBuilderList);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<BuilderListItem | null>(
-    null
+    null,
   );
 
   const { searchResult, searchYugiohCards } = useYugiohDatabase({
@@ -217,17 +217,17 @@ export const useBuilder = ({
           if (active.id !== over.id) {
             return setList((obj) => {
               const oldIndex = obj[activeContainerId].findIndex(
-                (el) => el.id === active.id
+                (el) => el.id === active.id,
               );
               const newIndex = obj[overContainerId].findIndex(
-                (el) => el.id === over!.id
+                (el) => el.id === over!.id,
               );
               return {
                 ...obj,
                 [activeContainerId]: arrayMove(
                   obj[activeContainerId],
                   oldIndex,
-                  newIndex
+                  newIndex,
                 ),
               };
             });
@@ -238,7 +238,7 @@ export const useBuilder = ({
         // transfer to overContainer.
         if (activeContainerId !== overContainerId) {
           const activeIndex = list[activeContainerId].findIndex(
-            (el) => el.id == active.id
+            (el) => el.id == active.id,
           );
 
           let activeList = Array.from(list[activeContainerId]);
@@ -262,7 +262,7 @@ export const useBuilder = ({
         // Safe validation
         if (activeContainerId && overContainerId) {
           const activeIndex = list[activeContainerId].findIndex(
-            (el) => el.id == active.id
+            (el) => el.id == active.id,
           );
 
           let activeList = Array.from(list[activeContainerId]);

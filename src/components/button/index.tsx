@@ -21,7 +21,7 @@ export const Button: FC<ButtonProps> = ({ disabled, label, onClick }) => {
         "rounded px-2 py-1 text-xs font-semibold shadow-sm ring-1 ring-inset ring-gray-300",
         disabled
           ? "bg-orange-50 text-gray-400"
-          : "hover:bg-orange-400 text-gray-900 bg-orange-300"
+          : "bg-orange-300 text-gray-900 hover:bg-orange-400",
       )}
     >
       {label}

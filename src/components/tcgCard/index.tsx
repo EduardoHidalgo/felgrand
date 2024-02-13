@@ -15,7 +15,7 @@ export interface TcgCardProps {
 export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
   const isMonster = (frameType: FrameType) => {
     return ![FrameType.Skill, FrameType.Spell, FrameType.Trap].includes(
-      frameType
+      frameType,
     );
   };
 
@@ -37,10 +37,10 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
   };
 
   return (
-    <div className="flex flex-col w-full gap-2 items-center">
+    <div className="flex w-full flex-col items-center gap-2 px-2">
       <img className="w-80" src={card.card_images[0].image_url} />
-      <div className="w-full flex flex-col">
-        <h2 className="font-semibold text-xl mb-2">{card.name}</h2>
+      <div className="flex w-full flex-col">
+        <h2 className="mb-2 text-xl font-semibold">{card.name}</h2>
         <div className="flex flex-row justify-start gap-8">
           <span className="">{card.type}</span>
           <span className="">{card.race}</span>
@@ -58,7 +58,7 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
               <>
                 <span className="flex flex-row items-center gap-1">
                   <p className="font-bold">{card.level}</p>
-                  <StarIcon className="w-5 h-5 text-white" />
+                  <StarIcon className="h-5 w-5 text-white" />
                 </span>
                 <span className="">{card.attribute}</span>
                 <span className="">ATK: {card.atk}</span>
@@ -67,9 +67,9 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
             ))}
         </div>
       </div>
-      <div className="text-sm whitespace-pre-line">{card.desc}</div>
+      <div className="whitespace-pre-line text-sm">{card.desc}</div>
       {card.banlist_info && (
-        <div className="flex flex-col w-full">
+        <div className="flex w-full flex-col">
           <Datatable>
             <Datatable.Head headers={["Game Type", "Ban Condition"]} />
             <Datatable.Body>
@@ -89,8 +89,8 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
           </Datatable>
         </div>
       )}
-      <div className="flex flex-col justify-start gap-2 w-full">
-        <h2 className="font-semibold text-xl">Tips</h2>
+      <div className="flex w-full flex-col justify-start gap-2">
+        <h2 className="text-xl font-semibold">Tips</h2>
         {tips.html !== null && tips.state == AsyncState.Success && (
           <div
             className="inner-html"
@@ -105,8 +105,8 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
           <p>Some error happened. Unable to load tips.</p>
         )}
       </div>
-      <div className="flex flex-col justify-start gap-2 w-full">
-        <h2 className="font-semibold text-xl">Rulings</h2>
+      <div className="flex w-full flex-col justify-start gap-2">
+        <h2 className="text-xl font-semibold">Rulings</h2>
         {rulings.html !== null && rulings.state == AsyncState.Success && (
           <div
             className="inner-html"

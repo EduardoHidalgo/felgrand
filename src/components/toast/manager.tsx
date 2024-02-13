@@ -48,7 +48,7 @@ export const NotificationProvider: FC<NotificationProviderProps> = ({
               />
             ))}
           </div>,
-          document.body
+          document.body,
         ) as ReactNode)}
     </NotificationsContext.Provider>
   );
