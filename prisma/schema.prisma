@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model CardList {
+  id Int @id @default(autoincrement())
+
+  archetype    String
+  importance   String?
+  priority     String?
+  race         String
+  storageGroup String?
+  yugiohId     String
+  banType      String?
+
+  items CardListItem[]
+}
+
+model CardListItem {
+  id Int @id @default(autoincrement())
+
+  condition  String
+  count      Int
+  language   String
+  rarityCode String
+  setCode    String
+  setName    String
+
+  CardList   CardList? @relation(fields: [cardListId], references: [id])
+  cardListId Int?
+}

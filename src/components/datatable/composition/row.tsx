@@ -1,11 +1,11 @@
 import classNames from "classnames";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, cloneElement } from "react";
+import { TableDataProps } from "./data";
 
-export interface TableRowProps {
+export interface TableRowProps
+  extends Pick<TableDataProps, "index" | "onClickRow"> {
   children: ReactNode;
-  index: number;
   isSelected?: boolean;
-  onClickRow?: (index: number) => void;
 }
 
 export const TableRow: FC<TableRowProps> = ({
@@ -14,13 +14,17 @@ export const TableRow: FC<TableRowProps> = ({
   isSelected,
   onClickRow,
 }) => {
-  const onClick = () => {
-    onClickRow && onClickRow(index);
-  };
-
   return (
-    <tr className={classNames(isSelected && "bg-gray-800")} onClick={onClick}>
-      {children}
+    <tr className={classNames(isSelected && "bg-gray-800")}>
+      {(children as Array<ReactNode>).map((child) =>
+        cloneElement(
+          child as JSX.Element,
+          {
+            index,
+            onClickRow,
+          } as Pick<TableDataProps, "index" | "onClickRow">,
+        ),
+      )}
     </tr>
   );
 };

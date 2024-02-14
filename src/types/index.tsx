@@ -7,6 +7,16 @@ export enum AsyncState {
   Success = "Success",
 }
 
+export type AsyncHtmlScrap = {
+  html: string | null;
+  state: AsyncState;
+};
+
+export type AsyncInventoryList = {
+  state: AsyncState;
+  list: Array<{ id: number }>;
+};
+
 export const defaultBuilderList = {
   custom: [],
   extra: [],
