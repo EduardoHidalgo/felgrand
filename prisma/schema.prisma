@@ -10,21 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model CardList {
+model StoredCard {
   id Int @id @default(autoincrement())
 
-  archetype    String
+  archetype    String?
+  banType      String?
+  cardType     String
   importance   String?
+  name         String
   priority     String?
   race         String
+  status       String
   storageGroup String?
-  yugiohId     String
-  banType      String?
+  yugiohId     Int
 
-  items CardListItem[]
+  items StoredCardVariation[]
 }
 
-model CardListItem {
+model StoredCardVariation {
   id Int @id @default(autoincrement())
 
   condition  String
@@ -34,6 +37,6 @@ model CardListItem {
   setCode    String
   setName    String
 
-  CardList   CardList? @relation(fields: [cardListId], references: [id])
+  CardList   StoredCard? @relation(fields: [cardListId], references: [id])
   cardListId Int?
 }

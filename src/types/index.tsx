@@ -1,4 +1,5 @@
 import { BuilderListType } from "@/components/builder";
+import { StoredCard } from "@prisma/client";
 
 export enum AsyncState {
   Error = "Error",
@@ -326,4 +327,24 @@ export enum CardType {
   UnionEffectMonster = "Union Effect Monster",
   XYZMonster = "XYZ Monster",
   XYZPendulumEffectMonster = "XYZ Pendulum Effect Monster",
+}
+
+export enum StoreStatus {
+  Bought = "Bought",
+  Default = "Default",
+  Delivered = "Delivered",
+  PendingDelivery = "PendingDelivery",
+  Stored = "Stored",
+  Wanted = "Wanted",
+}
+
+export interface AddStoredCardBody
+  extends Pick<YugiohCard, "archetype" | "name" | "race"> {
+  cardType: CardType;
+  status: StoreStatus;
+  yugiohId: YugiohCard["id"];
+}
+
+export interface GetStoredCardInventory {
+  inventory: Array<Pick<StoredCard, "id">>;
 }

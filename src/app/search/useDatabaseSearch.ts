@@ -1,7 +1,10 @@
 import {
+  AddStoredCardBody,
   AsyncHtmlScrap,
   AsyncInventoryList,
   AsyncState,
+  GetStoredCardInventory,
+  StoreStatus,
   YugiohCard,
   YugiohDatabase,
 } from "@/types";
@@ -22,6 +25,7 @@ export interface UseDatabaseSearchReturn {
   onClickRow: (index: number) => Promise<void>;
   rulings: AsyncHtmlScrap;
   selectedCard: YugiohCard | null;
+  storeCard: (cardId: number) => Promise<void>;
   tips: AsyncHtmlScrap;
 }
 
@@ -54,6 +58,8 @@ export const useDatabaseSearch = (
     inventory.state,
   );
 
+  useEffect(() => console.log({ inventory, list }), [inventory]);
+
   useEffect(() => {
     if (selectedCard !== null && selectedCard !== undefined) {
       setTips({ ...tips, state: AsyncState.Loading });
@@ -64,6 +70,38 @@ export const useDatabaseSearch = (
       fetchInventory();
     }
   }, [selectedCard]);
+
+  const rehydrateStoredCardToInventory = (cardId: number) => {
+    if (!inventory.list.some((item) => item.id === cardId)) {
+      setInventory({
+        list: [...inventory.list, { id: cardId }],
+        state: inventory.state,
+      });
+    }
+  };
+
+  const storeCard = async (cardId: number) => {
+    const url = `/api/cardStored/addNew`;
+    const card = database.data.find((item) => item.id === cardId);
+
+    if (card === undefined) return;
+
+    const body: AddStoredCardBody = {
+      cardType: card.type,
+      name: card.name,
+      race: card.race,
+      status: StoreStatus.Default,
+      yugiohId: card.id,
+      archetype: card.archetype,
+    };
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+
+    if (response.ok) rehydrateStoredCardToInventory(cardId);
+  };
 
   const fetchTips = async (card: YugiohCard) => {
     const url = `/api/tips?card_name=${card.name}`;
@@ -90,14 +128,24 @@ export const useDatabaseSearch = (
   };
 
   const fetchInventory = async () => {
-    setTimeout(
-      () =>
-        setInventory({
-          list: [{ id: 1639384 }, { id: 3954901 }],
-          state: AsyncState.Success,
-        }),
-      1000,
-    );
+    const url = `/api/cardStored/getInventory`;
+    const response = await fetch(url, { method: "GET" });
+
+    if (response.ok) {
+      const data = (await response.json()) as GetStoredCardInventory;
+
+      console.log({ data });
+
+      setInventory({
+        list: data.inventory,
+        state: AsyncState.Success,
+      });
+    } else {
+      setInventory({
+        list: [],
+        state: AsyncState.Error,
+      });
+    }
   };
 
   const fetchList = async (searchValue: string) => {
@@ -184,8 +232,9 @@ export const useDatabaseSearch = (
     await navigator.clipboard.writeText(list[index].name);
   };
 
-  const isInventoried = (cardId: number) =>
-    inventory.list.some((item) => item.id == cardId);
+  const isInventoried = (cardId: number) => {
+    return inventory.list.some((item) => item.id == cardId);
+  };
 
   return {
     fetchList,
@@ -196,6 +245,7 @@ export const useDatabaseSearch = (
     onClickRow,
     rulings,
     selectedCard,
+    storeCard,
     tips,
   };
 };

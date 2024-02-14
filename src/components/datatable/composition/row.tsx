@@ -16,13 +16,14 @@ export const TableRow: FC<TableRowProps> = ({
 }) => {
   return (
     <tr className={classNames(isSelected && "bg-gray-800")}>
-      {(children as Array<ReactNode>).map((child) =>
+      {(children as Array<ReactNode>).map((child, key) =>
         cloneElement(
           child as JSX.Element,
           {
             index,
             onClickRow,
-          } as Pick<TableDataProps, "index" | "onClickRow">,
+            key,
+          } as Pick<TableDataProps, "index" | "onClickRow"> & { key: number },
         ),
       )}
     </tr>

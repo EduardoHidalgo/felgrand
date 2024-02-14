@@ -8,8 +8,9 @@ import { Datatable } from "@/components/datatable";
 import { SearchBar } from "@/components/searchbar";
 import { TcgCard } from "@/components/tcgCard";
 import { useDatabaseSearch } from "./useDatabaseSearch";
-import { AsyncState } from "@/types";
+import { AsyncState, YugiohCard } from "@/types";
 import { Dialog } from "@/components/dialog";
+import { Button } from "@/components/button";
 
 export default function SearchPage() {
   const headers: Array<string> = [
@@ -26,6 +27,7 @@ export default function SearchPage() {
   const searchParam = searchParams.get("search");
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dialogCardId, setDialogCardId] = useState<number | null>(null);
 
   const onFetchClean = () => {
     router.push(pathname);
@@ -44,6 +46,7 @@ export default function SearchPage() {
     onClickRow,
     rulings,
     selectedCard,
+    storeCard,
     tips,
   } = useDatabaseSearch({
     onFetchClean,
@@ -61,17 +64,28 @@ export default function SearchPage() {
   };
 
   const closeDialog = () => {
+    setDialogCardId(null);
     setDialogOpen(false);
   };
 
-  const openDialog = () => {
+  const openDialog = (cardId: number) => {
+    setDialogCardId(cardId);
     setDialogOpen(true);
+  };
+
+  const onClickStoreCard = async () => {
+    if (dialogCardId) {
+      await storeCard(dialogCardId);
+      closeDialog();
+    }
   };
 
   return (
     <>
       <Dialog closeDialog={closeDialog} open={dialogOpen}>
-        <div>test</div>
+        <div className="m-8 flex flex-col">
+          <Button label="Add to store" onClick={onClickStoreCard} />
+        </div>
       </Dialog>
       <main className="">
         <div className="fixed left-0 flex h-full w-[60vw] max-w-[60vw] flex-col overflow-x-hidden overflow-y-scroll px-2">
@@ -118,12 +132,12 @@ export default function SearchPage() {
                         (isInventoried(card.id) ? (
                           <StarIcon
                             className="h-5 w-5 cursor-pointer text-yellow-300"
-                            onClick={openDialog}
+                            onClick={() => openDialog(card.id)}
                           />
                         ) : (
                           <StarIcon
                             className="h-5 w-5 cursor-pointer text-gray-600"
-                            onClick={openDialog}
+                            onClick={() => openDialog(card.id)}
                           />
                         ))}
                     </div>
