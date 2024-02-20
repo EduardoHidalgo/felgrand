@@ -1,25 +1,32 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { chromium } from "@playwright/test";
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const cardName = searchParams.get("card_name");
-
-  if (cardName == null || cardName == "")
-    return Response.json({}, { status: 400 });
+  let response: Response | null = null;
 
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
-  const cardNameUrified = cardName.replace(" ", "_");
-  await page.goto(`https://yugipedia.com/wiki/Card_Tips:${cardNameUrified}`, {
-    waitUntil: "load",
-  });
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const cardName = searchParams.get("card_name");
 
-  const element = await page.waitForSelector("#mw-content-text > div");
+    if (cardName == null || cardName == "") {
+      throw new Error("Empty of null parameters");
+    }
 
-  if (element) {
-    let html = await element?.evaluate((selector) => {
+    const cardNameUrified = cardName.replace(" ", "_");
+    await page.goto(`https://yugipedia.com/wiki/Card_Tips:${cardNameUrified}`, {
+      waitUntil: "load",
+    });
+
+    const element = await page.waitForSelector("#mw-content-text > div");
+
+    if (element == null || element == undefined) {
+      throw new Error("Browser element not found, unable to get data.");
+    }
+
+    let html = await element.evaluate((selector) => {
       selector.querySelector(".mobile-show")?.remove();
       selector.querySelector(".navbox-styles")?.remove();
       selector.querySelector(".navbox")?.remove();
@@ -43,10 +50,15 @@ export async function GET(request: NextRequest) {
       return selector.innerHTML.toString();
     });
 
-    if (html == null) return Response.json({ html: null }, { status: 200 });
+    if (html == null) {
+      throw new Error("HTML returned null");
+    }
 
-    if (html.includes("There is currently no text in this page"))
-      return Response.json({ html: null }, { status: 200 });
+    const noTextPage = "There is currently no text in this page";
+    if (html.includes(noTextPage)) {
+      response = Response.json({ html: null }, { status: 200 });
+      return;
+    }
 
     html = html.replace(new RegExp(/(\/wiki\/)/g), "/list?search=");
     html = html.replace(
@@ -54,12 +66,14 @@ export async function GET(request: NextRequest) {
       'target="_blank" href="/list',
     );
 
+    response = Response.json({ html: JSON.stringify(html) }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    response = Response.json({ html: null }, { status: 400 });
+  } finally {
+    await page.close();
     await browser.close();
 
-    return Response.json({ html: JSON.stringify(html) });
+    return response;
   }
-
-  await browser.close();
-
-  return Response.json({ html: null }, { status: 400 });
 }

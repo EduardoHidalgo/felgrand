@@ -4,13 +4,13 @@ import { GetStoredCardInventory } from "@/types";
 export async function GET() {
   try {
     const result = await prisma.storedCard.findMany({
-      select: { yugiohId: true },
+      select: { name: true },
     });
 
     const response: GetStoredCardInventory = {
       inventory: result.map((item) => {
         return {
-          id: item.yugiohId,
+          name: item.name,
         };
       }),
     };

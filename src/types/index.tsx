@@ -1,6 +1,8 @@
 import { BuilderListType } from "@/components/builder";
 import { StoredCard } from "@prisma/client";
 
+export type InputType = string | number | readonly string[] | undefined;
+
 export enum AsyncState {
   Error = "Error",
   Initial = "Initial",
@@ -15,7 +17,7 @@ export type AsyncHtmlScrap = {
 
 export type AsyncInventoryList = {
   state: AsyncState;
-  list: Array<{ id: number }>;
+  list: Array<Pick<StoredCard, "name">>;
 };
 
 export const defaultBuilderList = {
@@ -77,6 +79,7 @@ export enum Ban {
   Banned = "Banned",
   Limited = "Limited",
   SemiLimited = "Semi-Limited",
+  Unlimited = "Unlimited",
 }
 
 export interface CardImage {
@@ -329,6 +332,16 @@ export enum CardType {
   XYZPendulumEffectMonster = "XYZ Pendulum Effect Monster",
 }
 
+export enum CardLanguage {
+  English = "EN",
+  French = "FR",
+  German = "DE",
+  Italian = "IT",
+  Japanese = "JP",
+  Portuguese = "PT",
+  Spanish = "SP",
+}
+
 export enum StoreStatus {
   Bought = "Bought",
   Default = "Default",
@@ -338,13 +351,121 @@ export enum StoreStatus {
   Wanted = "Wanted",
 }
 
-export interface AddStoredCardBody
+export enum Importance {
+  Staple = 1,
+  ArchetypeCore = 2,
+  VeryHighValue = 3,
+  HighValue = 4,
+  MediumValue = 5,
+  LowValue = 6,
+  Unused = 7,
+  Trash = 8,
+  Unwanted = 9,
+  NotDefined = 9999,
+}
+
+export enum Priority {
+  Urgent = 1,
+  VeryHigh = 2,
+  High = 3,
+  Medium = 4,
+  Low = 5,
+  Unwanted = 6,
+  Ignore = 7,
+  Pending = 8,
+  TooExpensive = 99,
+  NotReleasedYet = 999,
+  NotDefined = 9999,
+}
+
+export enum Condition {
+  NearMint = 1,
+  LightlyPlayed = 2,
+  ModeratelyPlayed = 3,
+  HeavilyPlayer = 4,
+  Damaged = 5,
+}
+
+export interface AddNewStoredCard
   extends Pick<YugiohCard, "archetype" | "name" | "race"> {
   cardType: CardType;
-  status: StoreStatus;
-  yugiohId: YugiohCard["id"];
 }
 
 export interface GetStoredCardInventory {
-  inventory: Array<Pick<StoredCard, "id">>;
+  inventory: Array<Pick<StoredCard, "name">>;
+}
+
+export interface StoredCardData {
+  archetype: string | null;
+  avgValue: number;
+  banType: keyof typeof Ban;
+  cardType: keyof typeof CardType;
+  countSum: number;
+  id: number;
+  importance: Importance;
+  name: string;
+  priority: Priority;
+  race: keyof typeof Race;
+  wantedCountSum: number;
+}
+
+export interface StoredCardItemData {
+  boughtValue: number;
+  storedCardId: number;
+  condition: Condition;
+  count: number;
+  id: number;
+  language: CardLanguage;
+  rarityCode: SetRarityCode;
+  setCode: string;
+  setName: string;
+  status: StoreStatus;
+  storageGroup: string;
+  value: number;
+  wantedCount: number;
+}
+
+export type StoredCardItem = StoredCardData & {
+  items: Array<StoredCardItemData>;
+};
+
+export type StoredCardList = Array<StoredCardItem>;
+
+export interface NewStoredCardItem
+  extends Pick<
+    StoredCardItemData,
+    | "boughtValue"
+    | "condition"
+    | "count"
+    | "language"
+    | "status"
+    | "storageGroup"
+    | "value"
+    | "wantedCount"
+  > {
+  setIndex: number | null;
+}
+
+export interface UpdateRowStoredCardItem
+  extends Pick<
+    StoredCardItemData,
+    | "boughtValue"
+    | "condition"
+    | "count"
+    | "id"
+    | "language"
+    | "status"
+    | "storageGroup"
+    | "value"
+    | "wantedCount"
+  > {
+  setIndex: number | null;
+}
+
+export interface NewStoredCardItemBody
+  extends Omit<NewStoredCardItem, "setIndex"> {
+  rarityCode: SetRarityCode | null;
+  setCode: string | null;
+  setName: string | null;
+  storedCardId: number;
 }

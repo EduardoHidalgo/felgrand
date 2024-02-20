@@ -13,30 +13,33 @@ datasource db {
 model StoredCard {
   id Int @id @default(autoincrement())
 
-  archetype    String?
-  banType      String?
-  cardType     String
-  importance   String?
-  name         String
-  priority     String?
-  race         String
-  status       String
-  storageGroup String?
-  yugiohId     Int
+  archetype  String?
+  banType    String
+  cardType   String
+  importance Int
+  name       String
+  priority   Int
+  race       String
 
-  items StoredCardVariation[]
+  items StoredCardItem[]
 }
 
-model StoredCardVariation {
+model StoredCardItem {
   id Int @id @default(autoincrement())
 
-  condition  String
-  count      Int
-  language   String
-  rarityCode String
-  setCode    String
-  setName    String
+  condition    Int
+  language     String
+  rarityCode   String?
+  setCode      String?
+  setName      String?
+  status       String
+  storageGroup String?
 
-  CardList   StoredCard? @relation(fields: [cardListId], references: [id])
-  cardListId Int?
+  boughtValue Decimal
+  count       Int
+  value       Decimal
+  wantedCount Int
+
+  StoredCard   StoredCard @relation(fields: [storedCardId], references: [id])
+  storedCardId Int
 }

@@ -45,7 +45,7 @@ export const Toast: FC<ToastProps> = memo(({ destroy, notification }) => {
         leaveFrom="translate-x-0"
         leaveTo="translate-x-full"
       >
-        <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white ring-1 ring-black ring-opacity-5">
           <div className="p-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">

@@ -1,7 +1,7 @@
 "use client";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useDebounce } from "./useDebounce";
+import { useDebounce } from "@/hooks/useDebounde";
 
 export interface SearchBarProps {
   fetchData: (searchValue: string) => void;

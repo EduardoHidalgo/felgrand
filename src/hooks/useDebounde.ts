@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export function useDebounce<T>(value: T): T {
-  const DEBOUNCE_TIME_MS = 300;
+  const DEBOUNCE_TIME_MS = 750;
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   // Every time a new input is given but not enough time has passed, the

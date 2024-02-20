@@ -1,5 +1,5 @@
 import {
-  AddStoredCardBody,
+  AddNewStoredCard,
   AsyncHtmlScrap,
   AsyncInventoryList,
   AsyncState,
@@ -19,13 +19,13 @@ export interface UseDatabaseSearchProps {
 export interface UseDatabaseSearchReturn {
   fetchList: (searchValue: string) => Promise<void>;
   inventory: AsyncInventoryList;
-  isInventoried: (cardId: number) => boolean;
+  isInventoried: (cardName: string) => boolean;
   isInventoryLoading: boolean;
   list: YugiohCard[];
   onClickRow: (index: number) => Promise<void>;
   rulings: AsyncHtmlScrap;
   selectedCard: YugiohCard | null;
-  storeCard: (cardId: number) => Promise<void>;
+  storeCard: (cardName: string) => Promise<void>;
   tips: AsyncHtmlScrap;
 }
 
@@ -58,8 +58,6 @@ export const useDatabaseSearch = (
     inventory.state,
   );
 
-  useEffect(() => console.log({ inventory, list }), [inventory]);
-
   useEffect(() => {
     if (selectedCard !== null && selectedCard !== undefined) {
       setTips({ ...tips, state: AsyncState.Loading });
@@ -71,28 +69,26 @@ export const useDatabaseSearch = (
     }
   }, [selectedCard]);
 
-  const rehydrateStoredCardToInventory = (cardId: number) => {
-    if (!inventory.list.some((item) => item.id === cardId)) {
+  const rehydrateStoredCardToInventory = (cardName: string) => {
+    if (!inventory.list.some((item) => item.name === cardName)) {
       setInventory({
-        list: [...inventory.list, { id: cardId }],
+        list: [...inventory.list, { name: cardName }],
         state: inventory.state,
       });
     }
   };
 
-  const storeCard = async (cardId: number) => {
+  const storeCard = async (cardName: string) => {
     const url = `/api/cardStored/addNew`;
-    const card = database.data.find((item) => item.id === cardId);
+    const card = database.data.find((item) => item.name === cardName);
 
     if (card === undefined) return;
 
-    const body: AddStoredCardBody = {
+    const body: AddNewStoredCard = {
+      archetype: card.archetype,
       cardType: card.type,
       name: card.name,
       race: card.race,
-      status: StoreStatus.Default,
-      yugiohId: card.id,
-      archetype: card.archetype,
     };
 
     const response = await fetch(url, {
@@ -100,7 +96,7 @@ export const useDatabaseSearch = (
       body: JSON.stringify(body),
     });
 
-    if (response.ok) rehydrateStoredCardToInventory(cardId);
+    if (response.ok) rehydrateStoredCardToInventory(cardName);
   };
 
   const fetchTips = async (card: YugiohCard) => {
@@ -133,8 +129,6 @@ export const useDatabaseSearch = (
 
     if (response.ok) {
       const data = (await response.json()) as GetStoredCardInventory;
-
-      console.log({ data });
 
       setInventory({
         list: data.inventory,
@@ -232,8 +226,8 @@ export const useDatabaseSearch = (
     await navigator.clipboard.writeText(list[index].name);
   };
 
-  const isInventoried = (cardId: number) => {
-    return inventory.list.some((item) => item.id == cardId);
+  const isInventoried = (cardName: string) => {
+    return inventory.list.some((item) => item.name == cardName);
   };
 
   return {

@@ -13,5 +13,10 @@ body,
 }
 
 .inner-html a {
-  @apply text-red-300 cursor-pointer;
+  @apply cursor-pointer text-red-300;
+}
+
+select {
+  background-position: right 4px center !important;
+  background-size: 24px 24px !important;
 }

@@ -18,10 +18,10 @@ export const Button: FC<ButtonProps> = ({ disabled, label, onClick }) => {
       onClick={() => onClickHandler()}
       type="button"
       className={classNames(
-        "rounded px-2 py-1 text-xs font-semibold shadow-sm ring-1 ring-inset ring-white",
+        "rounded px-2 py-1 text-base font-medium transition-colors",
         disabled
-          ? "bg-orange-50 text-gray-400"
-          : "bg-orange-300 text-black hover:bg-orange-400",
+          ? "bg-gray-200 text-gray-600"
+          : "bg-white text-black hover:bg-gray-200",
       )}
     >
       {label}
