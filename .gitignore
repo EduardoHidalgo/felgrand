@@ -47,3 +47,4 @@ certificates
 
 # databases
 *.db
+*.db-journal

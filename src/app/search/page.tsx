@@ -12,6 +12,7 @@ import { TcgCard } from "@/components/tcgCard";
 import { Dialog } from "@/components/dialog";
 import { AsyncState } from "@/types";
 import { useSearchDialog } from "./useSearchDialog";
+import { ChipCardType } from "@/components/chipCardType";
 
 export default function SearchPage() {
   const pathname = usePathname();
@@ -38,16 +39,22 @@ export default function SearchPage() {
     onClickRow,
     rulings,
     selectedCard,
+    storeCard,
     tips,
   } = useDatabaseSearch({
     onFetchClean,
     onFetchFound,
   });
 
-  const { addNewStoredCardItem, storedCard, storedCardState, submitState } =
-    useSearchDialog({
-      card: selectedCard,
-    });
+  const {
+    addNewStoredCardItem,
+    deleteStoredCardItem,
+    storedCard,
+    storedCardState,
+    submitState,
+  } = useSearchDialog({
+    card: selectedCard,
+  });
 
   useEffect(() => {
     if (selectedCard == null && searchParam != null) {
@@ -64,11 +71,20 @@ export default function SearchPage() {
     setDialogOpen(true);
   };
 
+  const addStoredCardAndOpenDialog = async (
+    cardName: string,
+    index: number,
+  ) => {
+    await storeCard(cardName);
+    openDialog(index);
+  };
+
   return (
     <>
       <Dialog closeDialog={closeDialog} open={dialogOpen}>
         <SearchDialog
           addNewStoredCardItem={addNewStoredCardItem}
+          deleteStoredCardItem={deleteStoredCardItem}
           storedCard={storedCard}
           storedCardState={storedCardState}
           submitState={submitState}
@@ -83,7 +99,9 @@ export default function SearchPage() {
         >
           <Datatable.Head>
             <Datatable.HeaderCell>name</Datatable.HeaderCell>
-            <Datatable.HeaderCell>type</Datatable.HeaderCell>
+            <Datatable.HeaderCell className="text-center">
+              type
+            </Datatable.HeaderCell>
             <Datatable.HeaderCell>archetype</Datatable.HeaderCell>
             <Datatable.HeaderCell>race</Datatable.HeaderCell>
             <Datatable.HeaderCell className="text-center">
@@ -106,7 +124,9 @@ export default function SearchPage() {
                 >
                   {card.name}
                 </Datatable.Data>
-                <Datatable.Data>{card.type}</Datatable.Data>
+                <Datatable.Data className="!block text-center">
+                  <ChipCardType type={card.type} />
+                </Datatable.Data>
                 <Datatable.Data>{card.race}</Datatable.Data>
                 <Datatable.Data
                   className="justify-between"
@@ -131,7 +151,9 @@ export default function SearchPage() {
                       ) : (
                         <StarIcon
                           className="h-5 w-5 cursor-pointer text-gray-600"
-                          onClick={() => openDialog(index)}
+                          onClick={() =>
+                            addStoredCardAndOpenDialog(card.name, index)
+                          }
                         />
                       ))}
                   </div>

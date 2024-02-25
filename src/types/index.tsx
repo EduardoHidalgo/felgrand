@@ -399,7 +399,7 @@ export interface StoredCardData {
   archetype: string | null;
   avgValue: number;
   banType: keyof typeof Ban;
-  cardType: keyof typeof CardType;
+  cardType: CardType;
   countSum: number;
   id: number;
   importance: Importance;

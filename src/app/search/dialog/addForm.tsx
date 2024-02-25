@@ -44,8 +44,9 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
       value: 0,
       wantedCount: 0,
     },
-    onSubmit: (values) => {
-      addNewStoredCardItem(values);
+    onSubmit: async (values, { resetForm }) => {
+      await addNewStoredCardItem(values);
+      resetForm();
     },
   });
 
@@ -67,11 +68,9 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
     : [];
 
   const rarityLabel = () => {
-    console.log(addForm.values, cardSets);
     if (cardSets == undefined || addForm.values.setIndex == null) return "";
 
     const set = cardSets[addForm.values.setIndex];
-    console.log({ set });
 
     return `${set?.set_rarity} ${set?.set_rarity_code}`;
   };

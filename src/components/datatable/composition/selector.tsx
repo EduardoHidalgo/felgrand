@@ -22,13 +22,13 @@ export const TableSelector = <T,>({
     <div className={classNames("relative w-full", styles?.wrapper)}>
       <select
         className={classNames(
-          styles?.select,
           "transition-colors",
           "w-full rounded-md border-0 bg-black text-sm",
           "focus:outline-none",
           disabled
             ? "text-gray-300 placeholder:text-gray-400"
             : "text-gray-100 placeholder:text-gray-200",
+          styles?.select,
         )}
         disabled={disabled}
         id={id}
@@ -37,7 +37,7 @@ export const TableSelector = <T,>({
         value={value}
       >
         {options.map(({ label, value }) => (
-          <option key={label} value={value as any}>
+          <option key={label} value={value as any} className="text-gray-100">
             {label}
           </option>
         ))}

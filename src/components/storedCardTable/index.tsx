@@ -1,22 +1,27 @@
 import {
   AsyncState,
+  CardType,
   Importance,
   Priority,
   StoredCardItem,
   YugiohCard,
 } from "@/types";
-import { FC, Fragment } from "react";
+import { FC, Fragment, ReactNode } from "react";
 import { Datatable } from "../datatable";
 import { StoredCardItemsTable } from "./itemTable";
+import { Chip } from "../chip";
+import { ChipCardType } from "../chipCardType";
 
 export interface StoredCardTableProps {
   cards: Array<StoredCardItem>;
+  deleteStoredCardItem: (itemId: number) => Promise<void>;
   state: AsyncState;
   yugiohCard: YugiohCard | null;
 }
 
 export const StoredCardTable: FC<StoredCardTableProps> = ({
   cards,
+  deleteStoredCardItem,
   state,
   yugiohCard,
 }) => {
@@ -112,14 +117,18 @@ export const StoredCardTable: FC<StoredCardTableProps> = ({
         </Datatable.HeaderCell>
         <Datatable.HeaderCell>archetype</Datatable.HeaderCell>
         <Datatable.HeaderCell>ban</Datatable.HeaderCell>
-        <Datatable.HeaderCell>card type</Datatable.HeaderCell>
+        <Datatable.HeaderCell className="text-center">
+          card type
+        </Datatable.HeaderCell>
         <Datatable.HeaderCell>race</Datatable.HeaderCell>
       </Datatable.Head>
       <Datatable.Body>
         {cards.map((card, index) => (
           <Fragment key={card.id}>
             <Datatable.Row index={index} key={card.id}>
-              <Datatable.Data>{card.name}</Datatable.Data>
+              <Datatable.Data copyToClipboard={card.name}>
+                {card.name}
+              </Datatable.Data>
               <Datatable.Data>{card.countSum}</Datatable.Data>
               <Datatable.Data>{card.wantedCountSum}</Datatable.Data>
               <Datatable.Data className="w-full justify-between">
@@ -134,15 +143,20 @@ export const StoredCardTable: FC<StoredCardTableProps> = ({
               <Datatable.Data className="!block text-center">
                 {mapPriority(card.priority)}
               </Datatable.Data>
-              <Datatable.Data>
+              <Datatable.Data
+                copyToClipboard={card.archetype ? card.archetype : undefined}
+              >
                 {card.archetype ? card.archetype : ""}
               </Datatable.Data>
               <Datatable.Data>{card.banType}</Datatable.Data>
-              <Datatable.Data>{card.cardType}</Datatable.Data>
-              <Datatable.Data>{card.race}</Datatable.Data>
+              <Datatable.Data className="!block text-center">
+                <ChipCardType type={card.cardType} />
+              </Datatable.Data>
+              <Datatable.Data className="">{card.race}</Datatable.Data>
             </Datatable.Row>
             <Datatable.Row colSpan={12} key={"items-table"}>
               <StoredCardItemsTable
+                deleteStoredCardItem={deleteStoredCardItem}
                 items={card.items}
                 yugiohCard={yugiohCard!}
               />

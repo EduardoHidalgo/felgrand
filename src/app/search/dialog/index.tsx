@@ -11,6 +11,7 @@ import {
 
 export interface SearchDialogProps {
   addNewStoredCardItem: (item: NewStoredCardItem) => Promise<void>;
+  deleteStoredCardItem: (itemId: number) => Promise<void>;
   storedCard: StoredCardItem | null;
   storedCardState: AsyncState;
   submitState: AsyncState;
@@ -19,13 +20,14 @@ export interface SearchDialogProps {
 
 export const SearchDialog: FC<SearchDialogProps> = ({
   addNewStoredCardItem,
+  deleteStoredCardItem,
   storedCard,
   storedCardState,
   submitState,
   yugiohCard,
 }) => {
   return (
-    <div className="flex h-auto w-[85vw] flex-col gap-6 p-2">
+    <div className="flex h-auto w-[90vw] flex-col gap-6 p-2">
       {yugiohCard && (
         <SearchDialogAddForm
           addNewStoredCardItem={addNewStoredCardItem}
@@ -35,6 +37,7 @@ export const SearchDialog: FC<SearchDialogProps> = ({
       )}
       <StoredCardTable
         cards={storedCard ? [storedCard] : []}
+        deleteStoredCardItem={deleteStoredCardItem}
         state={storedCardState}
         yugiohCard={yugiohCard}
       />

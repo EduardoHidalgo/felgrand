@@ -60,7 +60,7 @@ export const Selector = <T,>({
         value={value}
       >
         {options.map(({ label, value }) => (
-          <option key={label} value={value as any}>
+          <option key={label} value={value as any} className="text-gray-100">
             {label}
           </option>
         ))}

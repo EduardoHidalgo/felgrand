@@ -5,11 +5,13 @@ import { StoredCardItemData, YugiohCard } from "@/types";
 import { ItemTableRow } from "./itemTableRow";
 
 export interface StoredCardItemsTableProps {
+  deleteStoredCardItem: (itemId: number) => Promise<void>;
   items: Array<StoredCardItemData>;
   yugiohCard: YugiohCard;
 }
 
 export const StoredCardItemsTable: FC<StoredCardItemsTableProps> = ({
+  deleteStoredCardItem,
   items,
   yugiohCard,
 }) => {
@@ -37,10 +39,14 @@ export const StoredCardItemsTable: FC<StoredCardItemsTableProps> = ({
         <Datatable.HeaderCell className="text-center">
           bought value
         </Datatable.HeaderCell>
+        <Datatable.HeaderCell className="text-center">
+          {""}
+        </Datatable.HeaderCell>
       </Datatable.Head>
       <Datatable.Body>
         {items.map((item, index) => (
           <ItemTableRow
+            deleteStoredCardItem={deleteStoredCardItem}
             index={index}
             item={item}
             key={index}

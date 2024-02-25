@@ -1,8 +1,15 @@
 import { FC, useEffect } from "react";
 import { useFormik } from "formik";
+import { TrashIcon } from "@heroicons/react/20/solid";
+import classNames from "classnames";
 import * as Yup from "yup";
 
 import { rarityCodeToName } from "@/utils/rarityCodeToName";
+import {
+  conditionOptions,
+  languageOptions,
+  statusOptions,
+} from "@/utils/options";
 import {
   CardLanguage,
   Condition,
@@ -13,19 +20,16 @@ import {
   YugiohCard,
 } from "@/types";
 import { Datatable } from "../datatable";
-import {
-  conditionOptions,
-  languageOptions,
-  statusOptions,
-} from "@/utils/options";
 
 export interface ItemTableRowProps {
+  deleteStoredCardItem: (itemId: number) => Promise<void>;
   index: number;
   item: StoredCardItemData;
   yugiohCard: YugiohCard;
 }
 
 export const ItemTableRow: FC<ItemTableRowProps> = ({
+  deleteStoredCardItem,
   index,
   item,
   yugiohCard,
@@ -89,11 +93,15 @@ export const ItemTableRow: FC<ItemTableRowProps> = ({
     await updateRowForm.setFieldValue("value", Number(value));
   };
 
+  const onClickDelete = async () => deleteStoredCardItem(item.id);
+
   useEffect(() => {
     updateRowForm.isValid && updateRowForm.submitForm();
   }, [updateRowForm.values]);
 
   const isSubmitting = updateRowForm.isSubmitting;
+
+  console.log({ item });
 
   return (
     <Datatable.Row index={index} key={item.id}>
@@ -111,7 +119,7 @@ export const ItemTableRow: FC<ItemTableRowProps> = ({
           onChange={onChangeLanguage}
           options={languageOptions}
           styles={{
-            select: "whitespace-nowrap !w-auto text-center",
+            select: "whitespace-nowrap !w-auto text-center font-bold",
           }}
           value={updateRowForm.values.language}
         />
@@ -123,19 +131,45 @@ export const ItemTableRow: FC<ItemTableRowProps> = ({
           onChange={onChangeCondition}
           options={conditionOptions}
           styles={{
-            select: "whitespace-nowrap !w-auto text-center",
+            select: classNames(
+              "whitespace-nowrap !w-auto text-center font-bold",
+              updateRowForm.values.condition == Condition.Damaged &&
+                "text-red-500",
+              updateRowForm.values.condition == Condition.HeavilyPlayer &&
+                "text-orange-500",
+              updateRowForm.values.condition == Condition.LightlyPlayed &&
+                "text-green-300",
+              updateRowForm.values.condition == Condition.ModeratelyPlayed &&
+                "text-yellow-400",
+              updateRowForm.values.condition == Condition.NearMint &&
+                "text-green-500",
+            ),
           }}
           value={updateRowForm.values.condition}
         />
       </Datatable.Data>
-      <Datatable.Data className="!inline-block whitespace-nowrap text-center">
+      <Datatable.Data className="blue !inline-block whitespace-nowrap text-center">
         <Datatable.Selector
           disabled={isSubmitting}
           id="status"
           onChange={onChangeStatus}
           options={statusOptions}
           styles={{
-            select: "whitespace-nowrap !w-auto text-center",
+            select: classNames(
+              "whitespace-nowrap !w-auto text-center font-bold",
+              updateRowForm.values.status == StoreStatus.Bought &&
+                "text-orange-400",
+              updateRowForm.values.status == StoreStatus.Default &&
+                "text-gray-200",
+              updateRowForm.values.status == StoreStatus.Delivered &&
+                "text-blue-500",
+              updateRowForm.values.status == StoreStatus.PendingDelivery &&
+                "text-yellow-400",
+              updateRowForm.values.status == StoreStatus.Stored &&
+                "text-green-400",
+              updateRowForm.values.status == StoreStatus.Wanted &&
+                "text-red-400",
+            ),
           }}
           value={updateRowForm.values.status}
         />
@@ -196,6 +230,12 @@ export const ItemTableRow: FC<ItemTableRowProps> = ({
             input: "text-right whitespace-nowrap",
           }}
           type="price"
+        />
+      </Datatable.Data>
+      <Datatable.Data>
+        <TrashIcon
+          className="h-6 w-6 cursor-pointer text-red-500 transition-all hover:scale-110 hover:text-red-400"
+          onClick={onClickDelete}
         />
       </Datatable.Data>
     </Datatable.Row>

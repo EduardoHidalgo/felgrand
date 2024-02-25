@@ -13,6 +13,7 @@ export interface UseSearchDialogProps {
 
 export interface UseSearchDialogReturn {
   addNewStoredCardItem: (item: NewStoredCardItem) => Promise<void>;
+  deleteStoredCardItem: (itemId: number) => Promise<void>;
   storedCard: StoredCardItem | null;
   storedCardState: AsyncState;
   submitState: AsyncState;
@@ -54,6 +55,7 @@ export const useSearchDialog = ({
     setSubmitState(AsyncState.Loading);
 
     const url = `/api/cardStored/addItem`;
+
     if (storedCard && card) {
       const response = await fetch(url, {
         method: "POST",
@@ -67,15 +69,18 @@ export const useSearchDialog = ({
           value: item.value,
           wantedCount: item.wantedCount,
           storedCardId: storedCard?.id,
-          rarityCode: item.setIndex
-            ? card.card_sets![item.setIndex].set_rarity_code
-            : null,
-          setCode: item.setIndex
-            ? card.card_sets![item.setIndex].set_code
-            : null,
-          setName: item.setIndex
-            ? card.card_sets![item.setIndex].set_name
-            : null,
+          rarityCode:
+            item.setIndex !== null
+              ? card.card_sets![item.setIndex].set_rarity_code
+              : null,
+          setCode:
+            item.setIndex !== null
+              ? card.card_sets![item.setIndex].set_code
+              : null,
+          setName:
+            item.setIndex !== null
+              ? card.card_sets![item.setIndex].set_name
+              : null,
         } as NewStoredCardItemBody),
       });
 
@@ -90,8 +95,48 @@ export const useSearchDialog = ({
     }
   };
 
+  const deleteStoredCardItem = async (itemId: number) => {
+    try {
+      const url = `/api/cardStored/deleteItem?id=${itemId}`;
+
+      const response = await fetch(url, {
+        method: "DELETE",
+      });
+
+      if (response.ok && storedCard) {
+        const itemsWithoutRemoved = storedCard.items.filter(
+          (i) => i.id != itemId,
+        );
+
+        const avgValue = itemsWithoutRemoved.reduce(
+          (sum, { value }) => (sum += value),
+          0,
+        );
+        const countSum = itemsWithoutRemoved.reduce(
+          (sum, { count }) => (sum += count),
+          0,
+        );
+        const wantedCountSum = itemsWithoutRemoved.reduce(
+          (sum, { wantedCount }) => (sum += wantedCount),
+          0,
+        );
+
+        setStoredCard({
+          ...storedCard,
+          avgValue,
+          countSum,
+          wantedCountSum,
+          items: itemsWithoutRemoved,
+        });
+      } else throw new Error(await response.json());
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return {
     addNewStoredCardItem,
+    deleteStoredCardItem,
     storedCard,
     storedCardState,
     submitState,

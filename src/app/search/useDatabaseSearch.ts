@@ -4,7 +4,6 @@ import {
   AsyncInventoryList,
   AsyncState,
   GetStoredCardInventory,
-  StoreStatus,
   YugiohCard,
   YugiohDatabase,
 } from "@/types";

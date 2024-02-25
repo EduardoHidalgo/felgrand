@@ -49,6 +49,18 @@ const config: Config = {
       screens: {
         tcglist: "1580px",
       },
+      colors: {
+        effect: "#FF8B53",
+        normal: "#FDE68A",
+        spell: "#6aa84f",
+        ritual: "#9DB5CC",
+        link: "#0b5394",
+        fusion: "#9900FF",
+        trap: "#a64d79",
+        synchro: "#CCCCCC",
+        token: "#C0C0C0",
+        xyz: "#323232",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],
