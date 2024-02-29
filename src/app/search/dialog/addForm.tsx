@@ -46,7 +46,19 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
     },
     onSubmit: async (values, { resetForm }) => {
       await addNewStoredCardItem(values);
-      resetForm();
+      resetForm({
+        values: {
+          boughtValue: 0,
+          condition: Condition.NearMint,
+          count: 0,
+          language: CardLanguage.English,
+          setIndex: isReleased ? 0 : null,
+          status: StoreStatus.Stored,
+          storageGroup: "",
+          value: 0,
+          wantedCount: 0,
+        },
+      });
     },
   });
 
@@ -116,139 +128,158 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
   };
 
   return (
-    <div className="flex w-full flex-col">
-      <div className="my-1 flex w-full flex-row justify-between border-b border-white pb-2 pl-2">
-        <h1 className="text-start text-2xl font-medium">Add Item</h1>
-        <Button
-          disabled={isSubmitting}
-          label="Add New Item"
-          onClick={onClickSubmit}
-        />
-      </div>
-      <div className="mt-4 grid grid-cols-24 gap-3">
-        {isReleased && (
-          <Selector<number>
+    <>
+      <div className="flex flex-col">
+        <div className="flex w-full flex-row justify-between border-b border-white pb-2 pl-2">
+          <h1 className="text-start text-2xl font-medium">Add Item</h1>
+          <div className="flex flex-row gap-2">
+            <Button
+              disabled={isSubmitting}
+              label="Add New Item"
+              onClick={onClickSubmit}
+            />
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-24 gap-3">
+          {isReleased && (
+            <Selector<number>
+              disabled={isSubmitting}
+              id="setIndex"
+              label="Set"
+              onChange={onChangeSetIndex}
+              options={setCodes}
+              styles={{
+                wrapper: "col-span-10",
+              }}
+              value={addForm.values.setIndex!}
+            />
+          )}
+          {isReleased && addForm.values.setIndex !== null && (
+            <Textfield
+              disabled={true}
+              id="rarityCode"
+              label="Rarity"
+              readonly
+              styles={{
+                wrapper: "col-span-6",
+              }}
+              type="text"
+              value={rarityLabel()}
+            />
+          )}
+          <Selector<CardLanguage>
             disabled={isSubmitting}
-            id="setIndex"
-            label="Set"
-            onChange={onChangeSetIndex}
-            options={setCodes}
+            id="language"
+            label="Language"
+            onChange={onChangeLanguage}
+            options={languageOptions}
             styles={{
-              wrapper: "col-span-10",
+              wrapper: "col-span-4",
             }}
-            value={addForm.values.setIndex!}
+            value={addForm.values.language}
           />
-        )}
-        {isReleased && addForm.values.setIndex !== null && (
-          <Textfield
-            disabled={true}
-            id="rarityCode"
-            label="Rarity"
-            readonly
+          <Selector<Condition>
+            disabled={isSubmitting}
+            id="condition"
+            label="Condition"
+            onChange={onChangeCondition}
+            options={conditionOptions}
             styles={{
-              wrapper: "col-span-6",
+              wrapper: "col-span-4",
+            }}
+            value={addForm.values.condition}
+          />
+          <Selector<StoreStatus>
+            disabled={isSubmitting}
+            id="status"
+            label="Status"
+            onChange={onChangeStatus}
+            options={statusOptions}
+            styles={{
+              wrapper: "col-span-4",
+            }}
+            value={addForm.values.status}
+          />
+          <Textfield
+            disabled={isSubmitting}
+            id="count"
+            label="Count"
+            min={0}
+            onChange={onChangeCount}
+            placeholder="0"
+            styles={{
+              wrapper: "col-span-4",
+            }}
+            type="number"
+            initialValue={addForm.values.count}
+            value={addForm.values.count}
+          />
+          <Textfield
+            disabled={isSubmitting}
+            id="wantedCount"
+            label="Wanted count"
+            min={0}
+            onChange={onChangeWantedCount}
+            placeholder="0"
+            styles={{
+              wrapper: "col-span-3",
+            }}
+            type="number"
+            initialValue={addForm.values.wantedCount}
+            value={addForm.values.wantedCount}
+          />
+          <Textfield
+            disabled={isSubmitting}
+            id="value"
+            label="Price Value"
+            min={0}
+            onChange={onChangeValue}
+            placeholder="0"
+            styles={{
+              wrapper: "col-span-3",
+            }}
+            type="price"
+            initialValue={addForm.values.value}
+            value={addForm.values.value}
+          />
+          <Textfield
+            disabled={isSubmitting}
+            id="boughtValue"
+            label="Bought Value"
+            onChange={onChangeBoughtValue}
+            placeholder="0"
+            styles={{
+              wrapper: "col-span-3",
+            }}
+            type="price"
+            min={0}
+            initialValue={addForm.values.boughtValue}
+            value={addForm.values.boughtValue}
+          />
+          <Textfield
+            disabled={isSubmitting}
+            id="storageGroup"
+            label="Storage Group"
+            styles={{
+              wrapper: "col-span-3",
             }}
             type="text"
-            value={rarityLabel()}
+            onChange={onChangeStorageGroup}
+            initialValue={addForm.values.storageGroup}
+            value={addForm.values.storageGroup}
           />
-        )}
-        <Selector<CardLanguage>
-          disabled={isSubmitting}
-          id="language"
-          label="Language"
-          onChange={onChangeLanguage}
-          options={languageOptions}
-          styles={{
-            wrapper: "col-span-4",
-          }}
-          value={addForm.values.language}
-        />
-        <Selector<Condition>
-          disabled={isSubmitting}
-          id="condition"
-          label="Condition"
-          onChange={onChangeCondition}
-          options={conditionOptions}
-          styles={{
-            wrapper: "col-span-4",
-          }}
-          value={addForm.values.condition}
-        />
-        <Selector<StoreStatus>
-          disabled={isSubmitting}
-          id="status"
-          label="Status"
-          onChange={onChangeStatus}
-          options={statusOptions}
-          styles={{
-            wrapper: "col-span-4",
-          }}
-          value={addForm.values.status}
-        />
-        <Textfield
-          disabled={isSubmitting}
-          id="count"
-          label="Count"
-          min={0}
-          onChange={onChangeCount}
-          placeholder="0"
-          styles={{
-            wrapper: "col-span-4",
-          }}
-          type="number"
-          initialValue={addForm.values.count}
-        />
-        <Textfield
-          disabled={isSubmitting}
-          id="wantedCount"
-          label="Wanted count"
-          min={0}
-          onChange={onChangeWantedCount}
-          placeholder="0"
-          styles={{
-            wrapper: "col-span-3",
-          }}
-          type="number"
-          initialValue={addForm.values.wantedCount}
-        />
-        <Textfield
-          disabled={isSubmitting}
-          id="value"
-          label="Price Value"
-          min={0}
-          onChange={onChangeValue}
-          placeholder="0"
-          styles={{
-            wrapper: "col-span-3",
-          }}
-          type="price"
-          initialValue={addForm.values.value}
-        />
-        <Textfield
-          disabled={isSubmitting}
-          id="boughtValue"
-          label="Bought Value"
-          onChange={onChangeBoughtValue}
-          placeholder="0"
-          styles={{
-            wrapper: "col-span-3",
-          }}
-          type="price"
-          min={0}
-          initialValue={addForm.values.boughtValue}
-        />
-        <Textfield
-          disabled={isSubmitting}
-          id="storageGroup"
-          label="Storage Group"
-          styles={{
-            wrapper: "col-span-3",
-          }}
-          type="text"
-          onChange={onChangeStorageGroup}
-          initialValue={addForm.values.storageGroup}
-        />
+        </div>
       </div>
-    </div>
+      <div className="flex flex-col">
+        <div className="flex w-full flex-row justify-between border-b border-white pb-2 pl-2">
+          <h1 className="text-start text-2xl font-medium">Set Prices</h1>
+          <Button
+            disabled={isSubmitting}
+            label="Get selected set prices"
+            onClick={() => {}}
+          />
+        </div>
+      </div>
+    </>
   );
 };

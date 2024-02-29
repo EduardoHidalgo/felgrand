@@ -6,6 +6,7 @@ import {
   AsyncState,
   NewStoredCardItem,
   StoredCardItem,
+  UpdateRowStoredCardItem,
   YugiohCard,
 } from "@/types";
 
@@ -16,6 +17,7 @@ export interface SearchDialogProps {
   storedCardState: AsyncState;
   submitState: AsyncState;
   yugiohCard: YugiohCard | null;
+  updateStoredCardItem: (item: UpdateRowStoredCardItem) => Promise<void>;
 }
 
 export const SearchDialog: FC<SearchDialogProps> = ({
@@ -25,6 +27,7 @@ export const SearchDialog: FC<SearchDialogProps> = ({
   storedCardState,
   submitState,
   yugiohCard,
+  updateStoredCardItem,
 }) => {
   return (
     <div className="flex h-auto w-[90vw] flex-col gap-6 p-2">
@@ -39,6 +42,7 @@ export const SearchDialog: FC<SearchDialogProps> = ({
         cards={storedCard ? [storedCard] : []}
         deleteStoredCardItem={deleteStoredCardItem}
         state={storedCardState}
+        updateStoredCardItem={updateStoredCardItem}
         yugiohCard={yugiohCard}
       />
     </div>

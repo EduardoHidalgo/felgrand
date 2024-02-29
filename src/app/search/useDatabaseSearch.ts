@@ -3,6 +3,7 @@ import {
   AsyncHtmlScrap,
   AsyncInventoryList,
   AsyncState,
+  Ban,
   GetStoredCardInventory,
   YugiohCard,
   YugiohDatabase,
@@ -88,6 +89,9 @@ export const useDatabaseSearch = (
       cardType: card.type,
       name: card.name,
       race: card.race,
+      banType: (card.banlist_info && card.banlist_info.ban_tcg
+        ? card.banlist_info.ban_tcg
+        : "Unlimited") as keyof typeof Ban,
     };
 
     const response = await fetch(url, {
@@ -142,8 +146,9 @@ export const useDatabaseSearch = (
   };
 
   const fetchList = async (searchValue: string) => {
+    setSelectedCard(null);
+
     if (searchValue === "" || searchValue.length < SEARCHABLE_LENGTH) {
-      setSelectedCard(null);
       setTips({ html: null, state: AsyncState.Initial });
       setRulings({ html: null, state: AsyncState.Initial });
       setList([]);

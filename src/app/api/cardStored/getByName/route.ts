@@ -22,10 +22,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    if (card == null) throw new Error("Card not found.");
+    if (card == null)
+      return Response.json(null, {
+        status: 200,
+      });
 
     const avgValue = card.items.reduce(
-      (sum, { value }) => (sum += value.toNumber()),
+      (sum, { value, count }) => (sum += count * value.toNumber()),
       0,
     );
     const countSum = card.items.reduce((sum, { count }) => (sum += count), 0);

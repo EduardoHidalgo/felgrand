@@ -1,18 +1,24 @@
 import { FC } from "react";
 
 import { Datatable } from "../datatable";
-import { StoredCardItemData, YugiohCard } from "@/types";
+import {
+  StoredCardItemData,
+  UpdateRowStoredCardItem,
+  YugiohCard,
+} from "@/types";
 import { ItemTableRow } from "./itemTableRow";
 
 export interface StoredCardItemsTableProps {
   deleteStoredCardItem: (itemId: number) => Promise<void>;
   items: Array<StoredCardItemData>;
+  updateStoredCardItem: (item: UpdateRowStoredCardItem) => Promise<void>;
   yugiohCard: YugiohCard;
 }
 
 export const StoredCardItemsTable: FC<StoredCardItemsTableProps> = ({
   deleteStoredCardItem,
   items,
+  updateStoredCardItem,
   yugiohCard,
 }) => {
   return (
@@ -50,6 +56,7 @@ export const StoredCardItemsTable: FC<StoredCardItemsTableProps> = ({
             index={index}
             item={item}
             key={index}
+            updateStoredCardItem={updateStoredCardItem}
             yugiohCard={yugiohCard}
           />
         ))}

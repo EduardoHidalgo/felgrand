@@ -25,6 +25,7 @@ export interface ItemTableRowProps {
   deleteStoredCardItem: (itemId: number) => Promise<void>;
   index: number;
   item: StoredCardItemData;
+  updateStoredCardItem: (item: UpdateRowStoredCardItem) => Promise<void>;
   yugiohCard: YugiohCard;
 }
 
@@ -32,6 +33,7 @@ export const ItemTableRow: FC<ItemTableRowProps> = ({
   deleteStoredCardItem,
   index,
   item,
+  updateStoredCardItem,
   yugiohCard,
 }) => {
   const cardSets = yugiohCard.card_sets;
@@ -51,16 +53,7 @@ export const ItemTableRow: FC<ItemTableRowProps> = ({
       value: Yup.number().positive().min(0),
     }),
     onSubmit: async (values) => {
-      const url = `/api/cardStored/updateItem`;
-
-      const response = await fetch(url, {
-        method: "PUT",
-        body: JSON.stringify(values),
-      });
-
-      if (response.ok == false) {
-        console.error(await response.json());
-      }
+      await updateStoredCardItem(values);
     },
   });
 

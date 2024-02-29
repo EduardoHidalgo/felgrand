@@ -1,15 +1,15 @@
+import { FC, Fragment } from "react";
+
 import {
   AsyncState,
-  CardType,
   Importance,
   Priority,
   StoredCardItem,
+  UpdateRowStoredCardItem,
   YugiohCard,
 } from "@/types";
-import { FC, Fragment, ReactNode } from "react";
 import { Datatable } from "../datatable";
 import { StoredCardItemsTable } from "./itemTable";
-import { Chip } from "../chip";
 import { ChipCardType } from "../chipCardType";
 
 export interface StoredCardTableProps {
@@ -17,12 +17,14 @@ export interface StoredCardTableProps {
   deleteStoredCardItem: (itemId: number) => Promise<void>;
   state: AsyncState;
   yugiohCard: YugiohCard | null;
+  updateStoredCardItem: (item: UpdateRowStoredCardItem) => Promise<void>;
 }
 
 export const StoredCardTable: FC<StoredCardTableProps> = ({
   cards,
   deleteStoredCardItem,
   state,
+  updateStoredCardItem,
   yugiohCard,
 }) => {
   const mapImportance = (importance: Importance): keyof typeof Importance => {
@@ -132,10 +134,10 @@ export const StoredCardTable: FC<StoredCardTableProps> = ({
               <Datatable.Data>{card.countSum}</Datatable.Data>
               <Datatable.Data>{card.wantedCountSum}</Datatable.Data>
               <Datatable.Data className="w-full justify-between">
-                <p>$</p>
                 <p className="w-full flex-1 text-right">
                   {card.avgValue.toFixed(2).toString()}
                 </p>
+                <p>$</p>
               </Datatable.Data>
               <Datatable.Data className="!block text-center">
                 {mapImportance(card.importance)}
@@ -158,6 +160,7 @@ export const StoredCardTable: FC<StoredCardTableProps> = ({
               <StoredCardItemsTable
                 deleteStoredCardItem={deleteStoredCardItem}
                 items={card.items}
+                updateStoredCardItem={updateStoredCardItem}
                 yugiohCard={yugiohCard!}
               />
             </Datatable.Row>

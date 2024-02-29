@@ -48,10 +48,13 @@ export default function SearchPage() {
 
   const {
     addNewStoredCardItem,
+    cleanStates,
     deleteStoredCardItem,
+    searchDialogOpened,
     storedCard,
     storedCardState,
     submitState,
+    updateStoredCardItem,
   } = useSearchDialog({
     card: selectedCard,
   });
@@ -64,11 +67,13 @@ export default function SearchPage() {
 
   const closeDialog = () => {
     setDialogOpen(false);
+    cleanStates();
   };
 
   const openDialog = (index: number) => {
     onClickRow(index);
     setDialogOpen(true);
+    searchDialogOpened();
   };
 
   const addStoredCardAndOpenDialog = async (
@@ -89,6 +94,7 @@ export default function SearchPage() {
           storedCardState={storedCardState}
           submitState={submitState}
           yugiohCard={selectedCard}
+          updateStoredCardItem={updateStoredCardItem}
         />
       </Dialog>
       <div className="fixed left-0 flex h-full w-[60vw] max-w-[60vw] flex-col overflow-x-hidden overflow-y-scroll px-2">

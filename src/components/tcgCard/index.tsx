@@ -116,7 +116,8 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
         <div className="flex w-full flex-col">
           <Datatable>
             <Datatable.Head>
-              <th>test</th>
+              <Datatable.HeaderCell>Format</Datatable.HeaderCell>
+              <Datatable.HeaderCell>Ban Condition</Datatable.HeaderCell>
             </Datatable.Head>
             <Datatable.Body>
               <Datatable.Row index={0}>

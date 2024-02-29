@@ -126,7 +126,7 @@ export enum SetRarity {
   PlatinumSecretRare = "Platinum Secret Rare",
   PremiumGoldRare = "Premium Gold Rare",
   PrismaticSecretRare = "Prismatic Secret Rare",
-  QCScR = "QCScR",
+  QCScR = "Quarter Century Secret Rare",
   QuarterCenturySecretRare = "Quarter Century Secret Rare",
   Rare = "Rare",
   SecretRare = "Secret Rare",
@@ -388,6 +388,7 @@ export enum Condition {
 
 export interface AddNewStoredCard
   extends Pick<YugiohCard, "archetype" | "name" | "race"> {
+  banType: keyof typeof Ban;
   cardType: CardType;
 }
 
@@ -468,4 +469,33 @@ export interface NewStoredCardItemBody
   setCode: string | null;
   setName: string | null;
   storedCardId: number;
+}
+
+export interface StoredCardCombined
+  extends Pick<
+      StoredCardData,
+      | "archetype"
+      | "banType"
+      | "cardType"
+      | "importance"
+      | "name"
+      | "priority"
+      | "race"
+    >,
+    Pick<
+      StoredCardItemData,
+      | "boughtValue"
+      | "condition"
+      | "count"
+      | "language"
+      | "rarityCode"
+      | "setCode"
+      | "setName"
+      | "status"
+      | "storageGroup"
+      | "value"
+      | "wantedCount"
+      | "storedCardId"
+    > {
+  storedCardItemId: number;
 }

@@ -1,11 +1,13 @@
+import { useState } from "react";
+
 import {
   AsyncState,
   NewStoredCardItem,
   NewStoredCardItemBody,
   StoredCardItem,
+  UpdateRowStoredCardItem,
   YugiohCard,
 } from "@/types";
-import { useEffect, useState } from "react";
 
 export interface UseSearchDialogProps {
   card: YugiohCard | null;
@@ -13,10 +15,13 @@ export interface UseSearchDialogProps {
 
 export interface UseSearchDialogReturn {
   addNewStoredCardItem: (item: NewStoredCardItem) => Promise<void>;
+  cleanStates: () => void;
   deleteStoredCardItem: (itemId: number) => Promise<void>;
+  searchDialogOpened: () => Promise<void>;
   storedCard: StoredCardItem | null;
   storedCardState: AsyncState;
   submitState: AsyncState;
+  updateStoredCardItem: (item: UpdateRowStoredCardItem) => Promise<void>;
 }
 
 export const useSearchDialog = ({
@@ -29,10 +34,13 @@ export const useSearchDialog = ({
   const [submitState, setSubmitState] = useState<AsyncState>(
     AsyncState.Initial,
   );
+  const [prices, setPrices] = useState({});
 
-  useEffect(() => {
-    if (card) fetchStoredCard();
-  }, [card]);
+  const cleanStates = () => {
+    setStoredCard(null);
+    setStoredCardState(AsyncState.Loading);
+    setSubmitState(AsyncState.Initial);
+  };
 
   const fetchStoredCard = async () => {
     if (card == null) {
@@ -43,7 +51,7 @@ export const useSearchDialog = ({
     const response = await fetch(url, { method: "GET" });
 
     if (response.ok) {
-      const data = (await response.json()) as StoredCardItem;
+      const data = (await response.json()) as StoredCardItem | null;
       setStoredCard(data);
       setStoredCardState(AsyncState.Success);
     } else {
@@ -95,6 +103,21 @@ export const useSearchDialog = ({
     }
   };
 
+  const updateStoredCardItem = async (item: UpdateRowStoredCardItem) => {
+    const url = `/api/cardStored/updateItem`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      body: JSON.stringify(item),
+    });
+
+    if (response.ok == false) {
+      return console.error(await response.json());
+    }
+
+    await fetchStoredCard();
+  };
+
   const deleteStoredCardItem = async (itemId: number) => {
     try {
       const url = `/api/cardStored/deleteItem?id=${itemId}`;
@@ -134,11 +157,20 @@ export const useSearchDialog = ({
     }
   };
 
+  const searchDialogOpened = async () => {
+    await fetchStoredCard();
+  };
+
+  const getPrices = async () => {};
+
   return {
     addNewStoredCardItem,
+    cleanStates,
     deleteStoredCardItem,
+    searchDialogOpened,
     storedCard,
     storedCardState,
     submitState,
+    updateStoredCardItem,
   };
 };

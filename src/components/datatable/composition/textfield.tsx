@@ -40,18 +40,13 @@ export const TableTextfield: FC<TableTextfieldProps> = ({
 
   return (
     <div className={classNames("relative w-full", styles?.wrapper)}>
-      {type == "price" && (
-        <div className="pointer-events-none absolute bottom-[6px] left-0 flex items-center">
-          <span className="text-base text-white">$</span>
-        </div>
-      )}
       <input
         className={classNames(
           styles?.input,
           "transition-colors",
           "w-full rounded-md border-0 bg-black !px-0 py-1.5 text-sm",
           "focus:outline-none",
-          type == "price" && "!pl-4",
+          type == "price" && "!pr-3",
           disabled
             ? "text-gray-300 placeholder:text-gray-400"
             : "text-gray-100 placeholder:text-gray-200",
@@ -65,6 +60,11 @@ export const TableTextfield: FC<TableTextfieldProps> = ({
         type={type ? type : "text"}
         value={readonly === true ? value : inputValue}
       />
+      {type == "price" && (
+        <div className="pointer-events-none absolute bottom-[5px] right-0 flex items-center">
+          <span className="text-base text-white">$</span>
+        </div>
+      )}
     </div>
   );
 };

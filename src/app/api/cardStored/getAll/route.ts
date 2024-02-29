@@ -1,5 +1,13 @@
 import prisma from "@/lib/prisma";
-import { StoredCardData, StoredCardList, StoredCardItemData } from "@/types";
+import {
+  StoredCardCombined,
+  StoreStatus,
+  CardLanguage,
+  Ban,
+  CardType,
+  Race,
+  SetRarityCode,
+} from "@/types";
 
 export async function GET() {
   try {
@@ -9,37 +17,64 @@ export async function GET() {
       },
     });
 
-    const response: StoredCardList = result.map((card) => {
-      const avgValue = card.items.reduce(
-        (sum, { value }) => (sum += value.toNumber()),
-        0,
-      );
-      const countSum = card.items.reduce((sum, { count }) => (sum += count), 0);
-      const wantedCountSum = card.items.reduce(
-        (sum, { wantedCount }) => (sum += wantedCount),
-        0,
-      );
-
-      const items: Array<StoredCardItemData> = card.items.map((item) => {
-        return {
-          ...item,
-          boughtValue: item.boughtValue.toNumber(),
-          value: item.value.toNumber(),
-        } as StoredCardItemData;
-      });
-
-      return {
-        ...card,
-        avgValue,
-        countSum,
+    const list: Array<StoredCardCombined> = [];
+    for (let c = 0; c < result.length; c++) {
+      const card = result[c];
+      const {
+        archetype,
+        banType,
+        cardType,
+        importance,
         items,
-        wantedCountSum,
-      } as StoredCardData & {
-        items: Array<StoredCardItemData>;
-      };
-    });
+        name,
+        priority,
+        race,
+      } = card;
 
-    return Response.json(response, {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const {
+          boughtValue,
+          condition,
+          count,
+          id,
+          language,
+          rarityCode,
+          setCode,
+          setName,
+          status,
+          storageGroup,
+          storedCardId,
+          value,
+          wantedCount,
+        } = item;
+
+        list.push({
+          archetype,
+          banType: banType as keyof typeof Ban,
+          boughtValue: boughtValue.toNumber(),
+          cardType: cardType as CardType,
+          condition,
+          count,
+          importance,
+          language: language as CardLanguage,
+          name,
+          priority,
+          race: race as keyof typeof Race,
+          rarityCode: rarityCode as SetRarityCode,
+          setCode: setCode ? setCode : "",
+          setName: setName ? setName : "",
+          status: status as StoreStatus,
+          storageGroup: storageGroup ? storageGroup : "",
+          storedCardId,
+          storedCardItemId: id,
+          value: value.toNumber(),
+          wantedCount,
+        });
+      }
+    }
+
+    return Response.json(list, {
       status: 200,
     });
   } catch (error) {

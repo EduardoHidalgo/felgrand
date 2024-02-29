@@ -1,6 +1,3 @@
-import { useDebounce } from "@/hooks/useDebounde";
-import { InputType } from "@/types";
-import classNames from "classnames";
 import {
   ChangeEvent,
   FC,
@@ -8,6 +5,10 @@ import {
   useEffect,
   useState,
 } from "react";
+import classNames from "classnames";
+
+import { useDebounce } from "@/hooks/useDebounde";
+import { InputType } from "@/types";
 
 export interface TextfieldProps {
   disabled?: boolean;
@@ -46,6 +47,10 @@ export const Textfield: FC<TextfieldProps> = ({
   const debouncedValue = useDebounce<InputType>(inputValue);
 
   useEffect(() => {
+    if (value !== inputValue) setInputValue(value);
+  }, [value]);
+
+  useEffect(() => {
     onChange && onChange(inputValue);
   }, [debouncedValue]);
 
@@ -66,18 +71,13 @@ export const Textfield: FC<TextfieldProps> = ({
       >
         {label}
       </label>
-      {type == "price" && (
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-          <span className="text-base text-white">$</span>
-        </div>
-      )}
       <input
         className={classNames(
           styles?.input,
           "transition-colors",
           "w-full rounded-md border-0 bg-black py-1.5 text-sm leading-6",
           "ring-1 ring-inset focus:ring-2 focus:ring-inset",
-          type == "price" && "pl-7",
+          type == "price" && "pl-3",
           disabled
             ? "text-gray-300 ring-gray-500 placeholder:text-gray-400 focus:ring-gray-200"
             : "text-gray-100 ring-gray-300 placeholder:text-gray-200 focus:ring-white",
@@ -91,6 +91,11 @@ export const Textfield: FC<TextfieldProps> = ({
         type={type ? type : "text"}
         value={readonly === true ? value : inputValue}
       />
+      {type == "price" && (
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+          <span className="text-base text-white">$</span>
+        </div>
+      )}
     </div>
   );
 };

@@ -20,7 +20,10 @@ export const TableData: FC<TableDataProps> = ({
   onClickRow,
 }) => {
   const onClick = () => {
-    clickRowIgnore !== true && onClickRow && index && onClickRow(index);
+    clickRowIgnore !== true &&
+      onClickRow &&
+      index !== undefined &&
+      onClickRow(index);
   };
 
   const onClickCopyToClipboard = async (value?: string) => {
@@ -29,11 +32,20 @@ export const TableData: FC<TableDataProps> = ({
 
   return (
     <td className="px-2 py-2 text-sm" onClick={onClick}>
-      <div className={classNames("flex w-full flex-row gap-2", className)}>
+      <div
+        className={classNames(
+          "flex w-full flex-row gap-2",
+          copyToClipboard && "justify-between",
+          className,
+        )}
+      >
         {children}
         {copyToClipboard && (
           <ClipboardIcon
-            className="h-4 w-4 min-w-[16px] self-center text-gray-300 transition-all hover:scale-125 hover:cursor-pointer hover:text-white"
+            className={classNames(
+              "text-gray-30 h-4 w-4 min-w-[16px] self-center",
+              "transition-all hover:scale-125 hover:cursor-pointer hover:text-white",
+            )}
             onClick={() => onClickCopyToClipboard(copyToClipboard)}
           />
         )}
