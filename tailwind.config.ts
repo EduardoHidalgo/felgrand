@@ -61,6 +61,21 @@ const config: Config = {
         token: "#C0C0C0",
         xyz: "#323232",
       },
+      animation: {
+        shiny: "shiny 2s ease infinite",
+      },
+      keyframes: {
+        shiny: {
+          "0%, 100%": {
+            "background-size": "200% 200%",
+            "background-position": "left center",
+          },
+          "50%": {
+            "background-size": "200% 200%",
+            "background-position": "right center",
+          },
+        },
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

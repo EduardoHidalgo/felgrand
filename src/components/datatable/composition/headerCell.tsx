@@ -13,7 +13,7 @@ export const TableHeaderCell: FC<TableHeaderCellProps> = ({
   return (
     <th
       className={classNames(
-        "bg-gray-900 px-2 py-2 text-left text-sm font-semibold",
+        "bg-gray-900 px-2 py-1 text-center text-sm font-semibold",
         className,
       )}
       scope={"col"}

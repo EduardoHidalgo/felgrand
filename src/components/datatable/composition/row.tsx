@@ -32,8 +32,8 @@ export const TableRow: FC<TableRowProps> = ({
             child as JSX.Element,
             {
               index,
-              onClickRow,
               key,
+              onClickRow,
             } as Pick<TableDataProps, "index" | "onClickRow"> & { key: number },
           ),
         )}

@@ -13,6 +13,7 @@ import { Dialog } from "@/components/dialog";
 import { AsyncState } from "@/types";
 import { useSearchDialog } from "./useSearchDialog";
 import { ChipCardType } from "@/components/chipCardType";
+import classNames from "classnames";
 
 export default function SearchPage() {
   const pathname = usePathname();
@@ -151,12 +152,18 @@ export default function SearchPage() {
                     {inventory.state === AsyncState.Success &&
                       (isInventoried(card.name) ? (
                         <StarIcon
-                          className="h-5 w-5 cursor-pointer text-yellow-400"
+                          className={classNames(
+                            "h-5 w-5 cursor-pointer text-yellow-400",
+                            "transition-all hover:scale-125 hover:text-yellow-300",
+                          )}
                           onClick={() => openDialog(index)}
                         />
                       ) : (
                         <StarIcon
-                          className="h-5 w-5 cursor-pointer text-gray-600"
+                          className={classNames(
+                            "h-5 w-5 cursor-pointer text-gray-600",
+                            "transition-all hover:scale-125 hover:text-gray-500",
+                          )}
                           onClick={() =>
                             addStoredCardAndOpenDialog(card.name, index)
                           }

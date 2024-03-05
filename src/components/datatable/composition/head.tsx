@@ -7,7 +7,9 @@ export interface TableHeadProps {
 export const TableHead: FC<TableHeadProps> = ({ children }) => {
   return (
     <thead>
-      <tr>{children}</tr>
+      <tr className="divide-x divide-gray-50 border border-white">
+        {children}
+      </tr>
     </thead>
   );
 };

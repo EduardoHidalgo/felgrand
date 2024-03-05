@@ -1,9 +1,25 @@
 "use client";
-import { Condition, Importance, Priority, StoreStatus } from "@/types";
+import {
+  CardLanguage,
+  Condition,
+  Importance,
+  Priority,
+  StoreStatus,
+} from "@/types";
 import { useStore } from "./useStore";
 import { Datatable } from "@/components/datatable";
 import { ChipCardType } from "@/components/chipCardType";
 import { rarityCodeToName } from "@/utils/rarityCodeToName";
+import { FlagUS } from "@/components/icons/flags/us";
+import { FlagFR } from "@/components/icons/flags/fr";
+import { FlagDE } from "@/components/icons/flags/de";
+import { FlagIT } from "@/components/icons/flags/it";
+import { FlagJP } from "@/components/icons/flags/jp";
+import { FlagPT } from "@/components/icons/flags/pt";
+import { FlagSP } from "@/components/icons/flags/sp";
+import { RarityColorful } from "@/components/rarityColorful";
+import { NoSymbolIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
 
 export default function StorePage() {
   const { cards, selectedCard, onClickRow } = useStore({});
@@ -15,11 +31,11 @@ export default function StorePage() {
       case Condition.HeavilyPlayer:
         return <span className="text-orange-500">HeavilyPlayer</span>;
       case Condition.LightlyPlayed:
-        return <span className="text-green-300">LightlyPlayed</span>;
+        return <span className="text-green-200">LightlyPlayed</span>;
       case Condition.ModeratelyPlayed:
         return <span className="text-yellow-400">ModeratelyPlayed</span>;
       case Condition.NearMint:
-        return <span className="text-green-500">NearMint</span>;
+        return <span className="text-green-400">NearMint</span>;
     }
   };
 
@@ -40,57 +56,106 @@ export default function StorePage() {
     }
   };
 
-  const mapImportance = (importance: Importance): keyof typeof Importance => {
+  const mapImportance = (importance: Importance) => {
     switch (importance) {
       case Importance.ArchetypeCore:
-        return "ArchetypeCore";
+        return <span className="text-blue-500">Archetype Core</span>;
       case Importance.HighValue:
-        return "HighValue";
+        return <span className="text-green-300">High Value</span>;
       case Importance.LowValue:
-        return "LowValue";
+        return <span className="text-orange-300">Low Value</span>;
       case Importance.MediumValue:
-        return "MediumValue";
+        return <span className="text-yellow-300">Medium Value</span>;
       case Importance.Staple:
-        return "Staple";
+        return <span className="text-purple-500">Staple</span>;
       case Importance.Trash:
-        return "Trash";
+        return (
+          <span className="bg-red-700">
+            Trash <TrashIcon className="h-4 w-4" />
+          </span>
+        );
       case Importance.Unused:
-        return "Unused";
+        return <span className="bg-red-300">Unused</span>;
       case Importance.Unwanted:
-        return "Unwanted";
+        return <span className="bg-red-500 line-through">Unwanted</span>;
       case Importance.VeryHighValue:
-        return "VeryHighValue";
+        return <span className="text-green-500">Very High Value</span>;
       case Importance.NotDefined:
       default:
-        return "NotDefined";
+        return <span className="">-</span>;
     }
   };
 
-  const mapPriority = (priority: Priority): keyof typeof Priority => {
+  const mapPriority = (priority: Priority) => {
     switch (priority) {
       case Priority.High:
-        return "High";
+        return <span className="text-yellow-500">High</span>;
       case Priority.Ignore:
-        return "Ignore";
+        return <span className="text-gray-500 line-through">Ignore</span>;
       case Priority.Low:
-        return "Low";
+        return <span className="text-orange-300">Low</span>;
       case Priority.Medium:
-        return "Medium";
+        return <span className="text-yellow-300">Medium</span>;
       case Priority.NotReleasedYet:
-        return "NotReleasedYet";
+        return (
+          <span className="text-red-700">
+            Not Released Yet <ExclamationCircleIcon className="h-5 w-5" />
+          </span>
+        );
       case Priority.Pending:
-        return "Pending";
+        return <span className="">Pending</span>;
       case Priority.TooExpensive:
-        return "TooExpensive";
+        return <span className="text-purple-500">Too Expensive</span>;
       case Priority.Unwanted:
-        return "Unwanted";
+        return <span className="text-red-300">Unwanted</span>;
       case Priority.Urgent:
-        return "Urgent";
+        return <span className="text-green-500">Urgent</span>;
       case Priority.VeryHigh:
-        return "VeryHigh";
+        return <span className="text-green-300">Very High</span>;
       case Priority.NotDefined:
       default:
-        return "NotDefined";
+        return <span className="">-</span>;
+    }
+  };
+
+  const mapLanguage = (language: CardLanguage) => {
+    switch (language) {
+      case CardLanguage.English:
+        return <FlagUS className="w-6" />;
+      case CardLanguage.French:
+        return <FlagFR className="w-6" />;
+      case CardLanguage.German:
+        return <FlagDE className="w-6" />;
+      case CardLanguage.Italian:
+        return <FlagIT className="w-6" />;
+      case CardLanguage.Japanese:
+        return <FlagJP className="w-6" />;
+      case CardLanguage.Portuguese:
+        return <FlagPT className="w-6" />;
+      case CardLanguage.Spanish:
+        return <FlagSP className="w-6" />;
+      default:
+        break;
+    }
+  };
+
+  const mapBanned = (
+    banType: "Banned" | "Limited" | "SemiLimited" | "Unlimited",
+  ) => {
+    switch (banType) {
+      case "Banned":
+        return (
+          <div className="flex gap-1 font-bold text-red-500">
+            <span>{banType}</span>
+            <NoSymbolIcon className="h-5 w-5" />
+          </div>
+        );
+      case "Limited":
+        return <span className="font-bold text-orange-500">{banType}</span>;
+      case "SemiLimited":
+        return <span className="font-bold text-yellow-500">{banType}</span>;
+      case "Unlimited":
+        return <span className="text-gray-400">{banType}</span>;
     }
   };
 
@@ -165,35 +230,44 @@ export default function StorePage() {
               </Datatable.Data>
               <Datatable.Data>{card.count}</Datatable.Data>
               <Datatable.Data>{card.wantedCount}</Datatable.Data>
-              <Datatable.Data>
-                <p className="w-full flex-1 text-right">
-                  {card.value.toFixed(2).toString()}
-                </p>
-                <p>$</p>
+              <Datatable.Data className="justify-end gap-1">
+                <span>{card.value.toFixed(2).toString()}</span>
+                <span>$</span>
               </Datatable.Data>
-              <Datatable.Data>{mapCondition(card.condition)}</Datatable.Data>
-              <Datatable.Data>{card.language}</Datatable.Data>
-              <Datatable.Data>{mapStatus(card.status)}</Datatable.Data>
-              <Datatable.Data>{card.storageGroup}</Datatable.Data>
+              <Datatable.Data className="!block text-center font-bold">
+                {mapCondition(card.condition)}
+              </Datatable.Data>
+              <Datatable.Data className="items-center justify-center">
+                {mapLanguage(card.language)}
+              </Datatable.Data>
+              <Datatable.Data className="!block text-center font-bold">
+                {mapStatus(card.status)}
+              </Datatable.Data>
+              <Datatable.Data className="!block text-center">
+                {card.storageGroup}
+              </Datatable.Data>
               <Datatable.Data className="!block whitespace-nowrap">
-                {rarityCodeToName(card.rarityCode)}
+                <RarityColorful rarity={rarityCodeToName(card.rarityCode)} />
               </Datatable.Data>
               <Datatable.Data className="!block text-center">
                 <ChipCardType type={card.cardType} />
               </Datatable.Data>
-              <Datatable.Data>{card.race}</Datatable.Data>
+              <Datatable.Data className="!block text-center">
+                {card.race}
+              </Datatable.Data>
               <Datatable.Data
+                className="text-center"
                 copyToClipboard={card.archetype ? card.archetype : undefined}
               >
                 {card.archetype ? card.archetype : ""}
               </Datatable.Data>
               <Datatable.Data className="!block text-center">
-                {card.banType}
+                {mapBanned(card.banType)}
               </Datatable.Data>
-              <Datatable.Data className="!block text-center">
+              <Datatable.Data className="!block text-center font-bold">
                 {mapImportance(card.importance)}
               </Datatable.Data>
-              <Datatable.Data className="!block text-center">
+              <Datatable.Data className="!block text-center font-bold">
                 {mapPriority(card.priority)}
               </Datatable.Data>
             </Datatable.Row>
