@@ -94,8 +94,6 @@ export const ItemTableRow: FC<ItemTableRowProps> = ({
 
   const isSubmitting = updateRowForm.isSubmitting;
 
-  console.log({ item });
-
   return (
     <Datatable.Row index={index} key={item.id}>
       <Datatable.Data className="whitespace-nowrap text-start">

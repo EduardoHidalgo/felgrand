@@ -1,22 +1,21 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 
 import {
   AsyncState,
-  Importance,
-  Priority,
   StoredCardItem,
   UpdateRowStoredCardItem,
+  UpdateStoredCard,
   YugiohCard,
 } from "@/types";
 import { Datatable } from "../datatable";
-import { StoredCardItemsTable } from "./itemTable";
-import { ChipCardType } from "../chipCardType";
+import { StoredCardTableRow } from "./StoredCardTableRow";
 
 export interface StoredCardTableProps {
   cards: Array<StoredCardItem>;
   deleteStoredCardItem: (itemId: number) => Promise<void>;
   state: AsyncState;
   yugiohCard: YugiohCard | null;
+  updateStoredCard: (item: UpdateStoredCard) => Promise<void>;
   updateStoredCardItem: (item: UpdateRowStoredCardItem) => Promise<void>;
 }
 
@@ -24,63 +23,10 @@ export const StoredCardTable: FC<StoredCardTableProps> = ({
   cards,
   deleteStoredCardItem,
   state,
+  updateStoredCard,
   updateStoredCardItem,
   yugiohCard,
 }) => {
-  const mapImportance = (importance: Importance): keyof typeof Importance => {
-    switch (importance) {
-      case Importance.ArchetypeCore:
-        return "ArchetypeCore";
-      case Importance.HighValue:
-        return "HighValue";
-      case Importance.LowValue:
-        return "LowValue";
-      case Importance.MediumValue:
-        return "MediumValue";
-      case Importance.Staple:
-        return "Staple";
-      case Importance.Trash:
-        return "Trash";
-      case Importance.Unused:
-        return "Unused";
-      case Importance.Unwanted:
-        return "Unwanted";
-      case Importance.VeryHighValue:
-        return "VeryHighValue";
-      case Importance.NotDefined:
-      default:
-        return "NotDefined";
-    }
-  };
-
-  const mapPriority = (priority: Priority): keyof typeof Priority => {
-    switch (priority) {
-      case Priority.High:
-        return "High";
-      case Priority.Ignore:
-        return "Ignore";
-      case Priority.Low:
-        return "Low";
-      case Priority.Medium:
-        return "Medium";
-      case Priority.NotReleasedYet:
-        return "NotReleasedYet";
-      case Priority.Pending:
-        return "Pending";
-      case Priority.TooExpensive:
-        return "TooExpensive";
-      case Priority.Unwanted:
-        return "Unwanted";
-      case Priority.Urgent:
-        return "Urgent";
-      case Priority.VeryHigh:
-        return "VeryHigh";
-      case Priority.NotDefined:
-      default:
-        return "NotDefined";
-    }
-  };
-
   const display = (): string | undefined => {
     switch (state) {
       case AsyncState.Error:
@@ -126,45 +72,15 @@ export const StoredCardTable: FC<StoredCardTableProps> = ({
       </Datatable.Head>
       <Datatable.Body>
         {cards.map((card, index) => (
-          <Fragment key={card.id}>
-            <Datatable.Row index={index} key={card.id}>
-              <Datatable.Data copyToClipboard={card.name}>
-                {card.name}
-              </Datatable.Data>
-              <Datatable.Data>{card.countSum}</Datatable.Data>
-              <Datatable.Data>{card.wantedCountSum}</Datatable.Data>
-              <Datatable.Data className="w-full justify-between">
-                <p className="w-full flex-1 text-right">
-                  {card.avgValue.toFixed(2).toString()}
-                </p>
-                <p>$</p>
-              </Datatable.Data>
-              <Datatable.Data className="!block text-center">
-                {mapImportance(card.importance)}
-              </Datatable.Data>
-              <Datatable.Data className="!block text-center">
-                {mapPriority(card.priority)}
-              </Datatable.Data>
-              <Datatable.Data
-                copyToClipboard={card.archetype ? card.archetype : undefined}
-              >
-                {card.archetype ? card.archetype : ""}
-              </Datatable.Data>
-              <Datatable.Data>{card.banType}</Datatable.Data>
-              <Datatable.Data className="!block text-center">
-                <ChipCardType type={card.cardType} />
-              </Datatable.Data>
-              <Datatable.Data className="">{card.race}</Datatable.Data>
-            </Datatable.Row>
-            <Datatable.Row colSpan={12} key={"items-table"}>
-              <StoredCardItemsTable
-                deleteStoredCardItem={deleteStoredCardItem}
-                items={card.items}
-                updateStoredCardItem={updateStoredCardItem}
-                yugiohCard={yugiohCard!}
-              />
-            </Datatable.Row>
-          </Fragment>
+          <StoredCardTableRow
+            key={`sctr-${index}`}
+            card={card}
+            deleteStoredCardItem={deleteStoredCardItem}
+            index={index}
+            updateStoredCard={updateStoredCard}
+            updateStoredCardItem={updateStoredCardItem}
+            yugiohCard={yugiohCard}
+          />
         ))}
       </Datatable.Body>
     </Datatable>

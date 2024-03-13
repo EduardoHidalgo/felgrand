@@ -1,12 +1,17 @@
 "use client";
-import { FC } from "react";
-import { StarIcon } from "@heroicons/react/20/solid";
+import { FC, useState } from "react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  StarIcon,
+} from "@heroicons/react/20/solid";
 
 import { AsyncState, Ban, FrameType, YugiohCard } from "@/types";
 import { Datatable } from "../datatable";
 import { Loader } from "../loader";
 import { Tooltip } from "../tooltip";
 import { rarityCodeToName } from "@/utils/rarityCodeToName";
+import classNames from "classnames";
 
 export interface TcgCardProps {
   card: YugiohCard;
@@ -15,6 +20,8 @@ export interface TcgCardProps {
 }
 
 export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
+  const [imageIndex, setImageIndex] = useState<number>(0);
+
   const hasValidCardSets =
     card.card_sets !== undefined && card.card_sets.length > 0;
 
@@ -41,9 +48,52 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
     }
   };
 
+  const image = card.card_images[imageIndex];
+  const imagesLength = card.card_images.length;
+  const onClickLeftImage = () =>
+    setImageIndex(imageIndex != 0 ? imageIndex - 1 : imageIndex);
+  const onClickRightImage = () =>
+    setImageIndex(imageIndex != imagesLength - 1 ? imageIndex + 1 : imageIndex);
+  const onClickDotImage = (index: number) => setImageIndex(index);
+
   return (
     <div className="flex w-full flex-col items-center gap-2 px-2">
-      <img className="w-80" src={card.card_images[0].image_url} />
+      <div className="relative w-80">
+        {imageIndex != 0 && (
+          <div
+            className="absolute inset-y-0 -left-10 m-auto h-8 w-8 cursor-pointer rounded-full bg-white transition-colors hover:bg-gray-200"
+            onClick={onClickLeftImage}
+          >
+            <ChevronLeftIcon className="text-black" />
+          </div>
+        )}
+        {imageIndex != imagesLength - 1 && (
+          <div
+            className="absolute inset-y-0 -right-10 m-auto h-8 w-8 cursor-pointer rounded-full bg-white transition-colors hover:bg-gray-200"
+            onClick={onClickRightImage}
+          >
+            <ChevronRightIcon className="text-black" />
+          </div>
+        )}
+        <img
+          className="w-full"
+          src={image && image.image_url && image.image_url}
+        />
+        {imagesLength > 1 && (
+          <div className="flex flex-row justify-center gap-3 pt-2">
+            {new Array(imagesLength).fill("").map((_, index) => (
+              <div
+                key={`dot-${index}`}
+                className={classNames(
+                  "h-3 w-3 cursor-pointer rounded-full bg-white transition-colors",
+                  index == imageIndex && "bg-yellow-400",
+                )}
+                onClick={() => onClickDotImage(index)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
       <div className="flex w-full flex-col">
         <h2 className="mb-1 text-xl font-semibold">{card.name}</h2>
         <div className="flex flex-row justify-start gap-8">
@@ -72,7 +122,7 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
             ))}
         </div>
       </div>
-
+      <div className="whitespace-pre-line text-sm">{card.desc}</div>
       <div className="flex w-full flex-col">
         <Datatable
           showDisplay={!hasValidCardSets}
@@ -97,7 +147,7 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
                     container={{
                       className: "text-center whitespace-nowrap w-full",
                     }}
-                    text={rarityCodeToName(set.set_rarity_code)}
+                    content={rarityCodeToName(set.set_rarity_code)}
                     tooltip={{
                       className: "right-12 top-0 bottom-0 whitespace-nowrap",
                     }}
@@ -110,8 +160,6 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
           </Datatable.Body>
         </Datatable>
       </div>
-
-      <div className="whitespace-pre-line text-sm">{card.desc}</div>
       {card.banlist_info && (
         <div className="flex w-full flex-col">
           <Datatable>

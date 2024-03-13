@@ -2,12 +2,16 @@ import { useState } from "react";
 
 import {
   AsyncState,
+  CTPrice,
+  GetPriceArgs,
   NewStoredCardItem,
   NewStoredCardItemBody,
   StoredCardItem,
   UpdateRowStoredCardItem,
+  UpdateStoredCard,
   YugiohCard,
 } from "@/types";
+import { rarityCodeToName } from "@/utils/rarityCodeToName";
 
 export interface UseSearchDialogProps {
   card: YugiohCard | null;
@@ -15,12 +19,17 @@ export interface UseSearchDialogProps {
 
 export interface UseSearchDialogReturn {
   addNewStoredCardItem: (item: NewStoredCardItem) => Promise<void>;
+  cleanPrice: () => Promise<void>;
   cleanStates: () => void;
   deleteStoredCardItem: (itemId: number) => Promise<void>;
+  getPrices: (args: GetPriceArgs) => Promise<void>;
+  prices: CTPrice | null;
+  pricesState: AsyncState;
   searchDialogOpened: () => Promise<void>;
   storedCard: StoredCardItem | null;
   storedCardState: AsyncState;
   submitState: AsyncState;
+  updateStoredCard: (item: UpdateStoredCard) => Promise<void>;
   updateStoredCardItem: (item: UpdateRowStoredCardItem) => Promise<void>;
 }
 
@@ -28,18 +37,28 @@ export const useSearchDialog = ({
   card,
 }: UseSearchDialogProps): UseSearchDialogReturn => {
   const [storedCard, setStoredCard] = useState<StoredCardItem | null>(null);
+  const [prices, setPrices] = useState<CTPrice | null>(null);
+
   const [storedCardState, setStoredCardState] = useState<AsyncState>(
     AsyncState.Loading,
   );
   const [submitState, setSubmitState] = useState<AsyncState>(
     AsyncState.Initial,
   );
-  const [prices, setPrices] = useState({});
+  const [pricesState, setPricesState] = useState<AsyncState>(
+    AsyncState.Initial,
+  );
 
   const cleanStates = () => {
     setStoredCard(null);
     setStoredCardState(AsyncState.Loading);
     setSubmitState(AsyncState.Initial);
+    cleanPrice();
+  };
+
+  const cleanPrice = async () => {
+    setPrices(null);
+    setPricesState(AsyncState.Initial);
   };
 
   const fetchStoredCard = async () => {
@@ -47,7 +66,7 @@ export const useSearchDialog = ({
       return setStoredCardState(AsyncState.Error);
     }
 
-    const url = `/api/cardStored/getByName?card_name=${card.name}`;
+    const url = `/api/cardStored/getByName?card_name=${encodeURIComponent(card.name)}`;
     const response = await fetch(url, { method: "GET" });
 
     if (response.ok) {
@@ -93,6 +112,7 @@ export const useSearchDialog = ({
       });
 
       if (response.ok) {
+        await cleanPrice();
         await fetchStoredCard();
         setSubmitState(AsyncState.Success);
       } else {
@@ -101,6 +121,21 @@ export const useSearchDialog = ({
     } else {
       setSubmitState(AsyncState.Error);
     }
+  };
+
+  const updateStoredCard = async (item: UpdateStoredCard) => {
+    const url = `/api/cardStored/update`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      body: JSON.stringify(item),
+    });
+
+    if (response.ok == false) {
+      return console.error(await response.json());
+    }
+
+    await fetchStoredCard();
   };
 
   const updateStoredCardItem = async (item: UpdateRowStoredCardItem) => {
@@ -161,16 +196,57 @@ export const useSearchDialog = ({
     await fetchStoredCard();
   };
 
-  const getPrices = async () => {};
+  const getPrices = async ({
+    cardName,
+    rarity,
+    setCode,
+    setName,
+  }: GetPriceArgs) => {
+    setPricesState(AsyncState.Loading);
+
+    if (storedCard == null) return setPricesState(AsyncState.Error);
+
+    let url = `/api/prices/card-trader?`;
+    url += `card_name=${encodeURIComponent(cardName)}`;
+    url += `&rarity=${rarity}`;
+    url += `&set_code=${setCode}`;
+    url += `&set_name=${setName}`;
+
+    const itemFound = storedCard.items.find(
+      (item) =>
+        item.setName == setName && rarityCodeToName(item.rarityCode) == rarity,
+    );
+
+    if (itemFound) {
+      url += `&stored_card_item_id=${itemFound.id}`;
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      const data = (await response.json()) as CTPrice;
+      setPrices(data);
+      setPricesState(AsyncState.Success);
+    } else {
+      return setPricesState(AsyncState.Error);
+    }
+  };
 
   return {
     addNewStoredCardItem,
+    cleanPrice,
     cleanStates,
     deleteStoredCardItem,
+    getPrices,
+    prices,
+    pricesState,
     searchDialogOpened,
     storedCard,
     storedCardState,
     submitState,
+    updateStoredCard,
     updateStoredCardItem,
   };
 };

@@ -3,11 +3,11 @@ import classNames from "classnames";
 
 export interface TooltipProps {
   children: ReactNode;
-  container: {
+  container?: {
     className?: string;
   };
-  text: string;
-  tooltip: {
+  content: ReactNode;
+  tooltip?: {
     className?: string;
   };
 }
@@ -15,7 +15,7 @@ export interface TooltipProps {
 export const Tooltip: FC<TooltipProps> = ({
   children,
   container,
-  text,
+  content,
   tooltip,
 }) => {
   const [isHover, setIsHover] = useState<boolean>(false);
@@ -25,20 +25,22 @@ export const Tooltip: FC<TooltipProps> = ({
 
   return (
     <div
-      className={classNames("relative", container.className)}
+      className={classNames("relative", container?.className)}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {children}
-      <p
-        className={classNames(
-          "absolute z-10 h-6 rounded border border-white bg-black px-2 py-1 text-center leading-3",
-          isHover == false && "hidden",
-          tooltip.className,
-        )}
-      >
-        {text}
-      </p>
+      {content && (
+        <p
+          className={classNames(
+            "absolute z-10 flex rounded border border-white bg-black px-2 py-1 text-center leading-3",
+            isHover == false && "hidden",
+            tooltip?.className,
+          )}
+        >
+          {content}
+        </p>
+      )}
     </div>
   );
 };

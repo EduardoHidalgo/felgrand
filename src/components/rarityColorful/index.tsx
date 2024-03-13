@@ -16,10 +16,11 @@ export const RarityColorful: FC<RarityColorfulProps> = ({
     case SetRarity.Common:
       return <p className="text-gray-400">{rarity}</p>;
     case SetRarity.GoldRare:
+    case SetRarity.GoldSecretRare:
     case SetRarity.PremiumGoldRare:
       return <p className="font-bold text-yellow-300">{rarity}</p>;
     case SetRarity.Rare:
-      return <p className="font-bold text-gray-50">{rarity}</p>;
+      return <p className="font-bold text-gray-200">{rarity}</p>;
     case SetRarity.PrismaticSecretRare:
     case SetRarity.SecretRare:
       return (

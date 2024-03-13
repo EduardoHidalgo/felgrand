@@ -60,10 +60,10 @@ export async function GET(request: NextRequest) {
       return;
     }
 
-    html = html.replace(new RegExp(/(\/wiki\/)/g), "/list?search=");
+    html = html.replace(new RegExp(/(\/wiki\/)/g), "/search?search=");
     html = html.replace(
-      new RegExp(/(href=\"\/list)/g),
-      'target="_blank" href="/list',
+      new RegExp(/(href=\"\/search)/g),
+      'target="_blank" href="/search',
     );
 
     response = Response.json({ html: JSON.stringify(html) }, { status: 200 });

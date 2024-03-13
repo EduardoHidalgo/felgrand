@@ -2,18 +2,18 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { StarIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
+import classNames from "classnames";
 
 import { useDatabaseSearch } from "./useDatabaseSearch";
-
-import { SearchDialog } from "./dialog";
-import { Datatable } from "@/components/datatable";
-import { SearchBar } from "@/components/searchbar";
-import { TcgCard } from "@/components/tcgCard";
-import { Dialog } from "@/components/dialog";
-import { AsyncState } from "@/types";
 import { useSearchDialog } from "./useSearchDialog";
+
 import { ChipCardType } from "@/components/chipCardType";
-import classNames from "classnames";
+import { Datatable } from "@/components/datatable";
+import { Dialog } from "@/components/dialog";
+import { SearchBar } from "@/components/searchbar";
+import { SearchDialog } from "./dialog";
+import { TcgCard } from "@/components/tcgCard";
+import { AsyncState } from "@/types";
 
 export default function SearchPage() {
   const pathname = usePathname();
@@ -22,6 +22,7 @@ export default function SearchPage() {
   const searchParam = searchParams.get("search");
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dialogIndex, setDialogIndex] = useState<number | null>(null);
 
   const onFetchClean = () => {
     router.push(pathname);
@@ -49,13 +50,18 @@ export default function SearchPage() {
 
   const {
     addNewStoredCardItem,
+    cleanPrice,
     cleanStates,
     deleteStoredCardItem,
     searchDialogOpened,
     storedCard,
     storedCardState,
     submitState,
+    updateStoredCard,
     updateStoredCardItem,
+    getPrices,
+    prices,
+    pricesState,
   } = useSearchDialog({
     card: selectedCard,
   });
@@ -66,15 +72,30 @@ export default function SearchPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (
+      selectedCard !== null &&
+      dialogIndex !== null &&
+      selectedCard.id == list[dialogIndex].id
+    ) {
+      openDialogSecurely();
+    }
+  }, [selectedCard, dialogIndex]);
+
   const closeDialog = () => {
     setDialogOpen(false);
+    setDialogIndex(null);
     cleanStates();
   };
 
   const openDialog = (index: number) => {
     onClickRow(index);
+    setDialogIndex(index);
+  };
+
+  const openDialogSecurely = async () => {
+    await searchDialogOpened();
     setDialogOpen(true);
-    searchDialogOpened();
   };
 
   const addStoredCardAndOpenDialog = async (
@@ -90,12 +111,17 @@ export default function SearchPage() {
       <Dialog closeDialog={closeDialog} open={dialogOpen}>
         <SearchDialog
           addNewStoredCardItem={addNewStoredCardItem}
+          cleanPrice={cleanPrice}
           deleteStoredCardItem={deleteStoredCardItem}
+          getPrices={getPrices}
+          prices={prices}
+          pricesState={pricesState}
           storedCard={storedCard}
           storedCardState={storedCardState}
           submitState={submitState}
-          yugiohCard={selectedCard}
+          updateStoredCard={updateStoredCard}
           updateStoredCardItem={updateStoredCardItem}
+          yugiohCard={selectedCard}
         />
       </Dialog>
       <div className="fixed left-0 flex h-full w-[60vw] max-w-[60vw] flex-col overflow-x-hidden overflow-y-scroll px-2">

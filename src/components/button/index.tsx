@@ -20,7 +20,7 @@ export const Button: FC<ButtonProps> = ({ disabled, label, onClick }) => {
       className={classNames(
         "rounded px-2 py-1 text-base font-medium transition-colors",
         disabled
-          ? "bg-gray-200 text-gray-600"
+          ? "cursor-not-allowed bg-gray-200 text-gray-600"
           : "bg-white text-black hover:bg-gray-200",
       )}
     >

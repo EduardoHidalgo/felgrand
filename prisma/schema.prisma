@@ -42,4 +42,23 @@ model StoredCardItem {
 
   StoredCard   StoredCard @relation(fields: [storedCardId], references: [id])
   storedCardId Int
+  ctPrices     CTPrices?
+}
+
+model CTPrices {
+  id Int @id @unique @default(autoincrement())
+
+  betterPrice Decimal?
+  marketPrice Decimal?
+  minPrice    Decimal?
+
+  cardName String
+  setName  String
+  rarity   String
+
+  StoredCardItem   StoredCardItem? @relation(fields: [storedCardItemId], references: [id])
+  storedCardItemId Int?            @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

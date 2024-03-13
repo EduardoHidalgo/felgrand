@@ -19,7 +19,11 @@ import { FlagPT } from "@/components/icons/flags/pt";
 import { FlagSP } from "@/components/icons/flags/sp";
 import { RarityColorful } from "@/components/rarityColorful";
 import { NoSymbolIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
+import {
+  ExclamationCircleIcon,
+  QuestionMarkCircleIcon,
+} from "@heroicons/react/20/solid";
+import { TrendingPrice } from "@/components/trendingPrice";
 
 export default function StorePage() {
   const { cards, selectedCard, onClickRow } = useStore({});
@@ -66,6 +70,8 @@ export default function StorePage() {
         return <span className="text-orange-300">Low Value</span>;
       case Importance.MediumValue:
         return <span className="text-yellow-300">Medium Value</span>;
+      case Importance.Proxy:
+        return <span className="text-pink-400">Proxy</span>;
       case Importance.Staple:
         return <span className="text-purple-500">Staple</span>;
       case Importance.Trash:
@@ -228,17 +234,27 @@ export default function StorePage() {
               <Datatable.Data copyToClipboard={card.name}>
                 {card.name}
               </Datatable.Data>
-              <Datatable.Data>{card.count}</Datatable.Data>
+              <Datatable.Data>
+                <>
+                  {card.count > 0 && <span>{card.count}</span>}
+                  {card.count == 0 && (
+                    <span className="flex flex-row items-center gap-1 font-bold text-red-400">
+                      {card.count}
+                      <QuestionMarkCircleIcon className="h-4 w-4" />
+                    </span>
+                  )}
+                </>
+              </Datatable.Data>
               <Datatable.Data>{card.wantedCount}</Datatable.Data>
-              <Datatable.Data className="justify-end gap-1">
-                <span>{card.value.toFixed(2).toString()}</span>
-                <span>$</span>
+              <Datatable.Data className="justify-end">
+                <TrendingPrice price={card.value} prices={card.prices} />
               </Datatable.Data>
               <Datatable.Data className="!block text-center font-bold">
                 {mapCondition(card.condition)}
               </Datatable.Data>
               <Datatable.Data className="items-center justify-center">
-                {mapLanguage(card.language)}
+                {/* {mapLanguage(card.language)} */}
+                {card.language}
               </Datatable.Data>
               <Datatable.Data className="!block text-center font-bold">
                 {mapStatus(card.status)}

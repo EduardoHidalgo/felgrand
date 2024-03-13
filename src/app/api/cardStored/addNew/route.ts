@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { AddNewStoredCard, Ban, Importance, Priority } from "@/types";
+import { AddNewStoredCard, Importance, Priority } from "@/types";
 import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -9,7 +9,6 @@ export async function POST(req: NextRequest) {
   try {
     const card = await prisma.storedCard.create({
       data: {
-        banType: String(Ban.Unlimited),
         importance: Importance.NotDefined,
         priority: Priority.NotDefined,
         ...body,

@@ -334,12 +334,12 @@ export enum CardType {
 
 export enum CardLanguage {
   English = "EN",
+  Spanish = "SP",
+  Italian = "IT",
   French = "FR",
   German = "DE",
-  Italian = "IT",
   Japanese = "JP",
   Portuguese = "PT",
-  Spanish = "SP",
 }
 
 export enum StoreStatus {
@@ -361,6 +361,7 @@ export enum Importance {
   Unused = 7,
   Trash = 8,
   Unwanted = 9,
+  Proxy = 20,
   NotDefined = 9999,
 }
 
@@ -447,6 +448,12 @@ export interface NewStoredCardItem
   setIndex: number | null;
 }
 
+export interface UpdateStoredCard
+  extends Pick<
+    StoredCardData,
+    "archetype" | "id" | "importance" | "priority"
+  > {}
+
 export interface UpdateRowStoredCardItem
   extends Pick<
     StoredCardItemData,
@@ -498,4 +505,30 @@ export interface StoredCardCombined
       | "storedCardId"
     > {
   storedCardItemId: number;
+  prices: Omit<CTPrice, "storedCardItemId"> | null;
 }
+
+export interface GetPriceArgs {
+  cardName: string;
+  rarity: string;
+  setCode: string;
+  setName: string;
+}
+
+export interface CTPrice {
+  betterPrice: number | null;
+  minPrice: number | null;
+  marketPrice: number | null;
+  storedCardItemId: number | null;
+}
+
+export type TrendingPriceType =
+  | "lowDown"
+  | "lowUp"
+  | "mediumDown"
+  | "mediumUp"
+  | "highDown"
+  | "highUp"
+  | "nearMintUp"
+  | "none"
+  | "invalid";

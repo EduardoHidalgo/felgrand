@@ -15,7 +15,7 @@ export const ChipCardType: FC<ChipCardTypeProps> = ({ type }) => {
       return <Chip className="bg-effect text-black">{type}</Chip>;
     case CardType.PendulumFlipEffectMonster:
       return (
-        <Chip className="from-spell to-effect bg-gradient-to-r text-black">
+        <Chip className="bg-gradient-to-r from-spell to-effect text-black">
           {type}
         </Chip>
       );
@@ -31,31 +31,31 @@ export const ChipCardType: FC<ChipCardTypeProps> = ({ type }) => {
       return <Chip className="bg-normal text-black">{type}</Chip>;
     case CardType.PendulumEffectFusionMonster:
       return (
-        <Chip className="from-spell to-fusion bg-gradient-to-r text-white">
+        <Chip className="bg-gradient-to-r from-spell to-fusion text-white">
           {type}
         </Chip>
       );
     case CardType.PendulumEffectMonster:
       return (
-        <Chip className="from-spell to-effect via-effect bg-gradient-to-r text-black">
+        <Chip className="bg-gradient-to-r from-spell via-effect to-effect text-black">
           {type}
         </Chip>
       );
     case CardType.PendulumEffectRitualMonster:
       return (
-        <Chip className="from-spell to-ritual bg-gradient-to-r text-black">
+        <Chip className="bg-gradient-to-r from-spell via-ritual to-ritual text-black">
           {type}
         </Chip>
       );
     case CardType.PendulumNormalMonster:
       return (
-        <Chip className="from-spell to-normal bg-gradient-to-r text-black">
+        <Chip className="bg-gradient-to-r from-spell to-normal text-black">
           {type}
         </Chip>
       );
     case CardType.PendulumTunerEffectMonster:
       return (
-        <Chip className="from-spell to-effect via-effect bg-gradient-to-r text-black">
+        <Chip className="bg-gradient-to-r from-spell via-effect to-effect text-black">
           {type}
         </Chip>
       );
@@ -73,7 +73,7 @@ export const ChipCardType: FC<ChipCardTypeProps> = ({ type }) => {
       return <Chip className="bg-synchro text-black">{type}</Chip>;
     case CardType.SynchroPendulumEffectMonster:
       return (
-        <Chip className="from-spell to-synchro via-synchro bg-gradient-to-r text-black">
+        <Chip className="bg-gradient-to-r from-spell via-synchro to-synchro text-black">
           {type}
         </Chip>
       );
@@ -91,7 +91,7 @@ export const ChipCardType: FC<ChipCardTypeProps> = ({ type }) => {
       return <Chip className="bg-effect text-black">{type}</Chip>;
     case CardType.XYZPendulumEffectMonster:
       return (
-        <Chip className="from-spell to-xyz via-xyz bg-gradient-to-r text-white">
+        <Chip className="bg-gradient-to-r from-spell via-xyz to-xyz text-white">
           {type}
         </Chip>
       );

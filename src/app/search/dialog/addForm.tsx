@@ -1,12 +1,12 @@
 import { FC } from "react";
 import { useFormik } from "formik";
 
-import { Textfield } from "@/components/textfield";
-import { Selector, SelectorOption } from "@/components/selector";
-import { Button } from "@/components/button";
 import {
+  AsyncState,
+  CTPrice,
   CardLanguage,
   Condition,
+  GetPriceArgs,
   InputType,
   NewStoredCardItem,
   StoreStatus,
@@ -17,16 +17,28 @@ import {
   languageOptions,
   statusOptions,
 } from "@/utils/options";
+import { Button } from "@/components/button";
+import { Loader } from "@/components/loader";
+import { Selector, SelectorOption } from "@/components/selector";
+import { Textfield } from "@/components/textfield";
 
 export interface SearchDialogAddFormProps {
   addNewStoredCardItem: (item: NewStoredCardItem) => Promise<void>;
+  cleanPrice: () => Promise<void>;
+  getPrices: (args: GetPriceArgs) => Promise<void>;
   isSubmitting: boolean;
+  prices: CTPrice | null;
+  pricesState: AsyncState;
   yugiohCard: YugiohCard;
 }
 
 export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
   addNewStoredCardItem,
+  cleanPrice,
+  getPrices,
   isSubmitting,
+  prices,
+  pricesState,
   yugiohCard,
 }) => {
   const cardSets = yugiohCard.card_sets;
@@ -62,18 +74,22 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
     },
   });
 
+  const getSelectedSetPrices = () => {
+    if (cardSets !== undefined && addForm.values.setIndex !== null) {
+      const cardSet = cardSets[addForm.values.setIndex];
+      getPrices({
+        cardName: yugiohCard.name,
+        rarity: cardSet.set_rarity,
+        setCode: cardSet.set_code,
+        setName: cardSet.set_name,
+      });
+    }
+  };
+
   const setCodes: Array<SelectorOption<number>> = isReleased
     ? cardSets!.map((s, index) => {
-        const coincidences = cardSets.reduce(
-          (sum, { set_code }) => (set_code == s.set_code ? (sum += 1) : sum),
-          0,
-        );
-
         return {
-          label:
-            coincidences > 1
-              ? `${s.set_code} - ${s.set_name} ${s.set_rarity_code}`
-              : `${s.set_code} - ${s.set_name}`,
+          label: `${s.set_code} - ${s.set_name} ${s.set_rarity_code}`,
           value: index,
         };
       })
@@ -89,6 +105,7 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
 
   const onChangeSetIndex = async (value: number) => {
     await addForm.setFieldValue("setIndex", Number(value));
+    await cleanPrice();
   };
 
   const onChangeLanguage = async (value: CardLanguage) => {
@@ -274,11 +291,66 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
         <div className="flex w-full flex-row justify-between border-b border-white pb-2 pl-2">
           <h1 className="text-start text-2xl font-medium">Set Prices</h1>
           <Button
-            disabled={isSubmitting}
+            disabled={
+              cardSets === undefined ||
+              addForm.values.setIndex == null ||
+              pricesState == AsyncState.Loading ||
+              pricesState == AsyncState.Success
+            }
             label="Get selected set prices"
-            onClick={() => {}}
+            onClick={getSelectedSetPrices}
           />
         </div>
+        {pricesState == AsyncState.Error && (
+          <p className="mt-4 text-red-500">
+            Some error happened. Unable to load prices.
+          </p>
+        )}
+        {pricesState === AsyncState.Initial && (
+          <p className="mt-4">
+            click the "Get selected set prices" button to obtain prices for real
+            stores.
+          </p>
+        )}
+        {pricesState == AsyncState.Loading && (
+          <div className="mt-4 flex flex-row items-center justify-center">
+            <Loader />
+          </div>
+        )}
+        {pricesState == AsyncState.Success && prices && (
+          <div className="flex flex-row gap-4 text-lg font-bold">
+            <div className="flex flex-row gap-1">
+              <p>Minimum Price:</p>
+              {prices.minPrice ? (
+                <p className="text-green-500">
+                  {Number(prices.minPrice).toFixed(2)} $
+                </p>
+              ) : (
+                <p className="text-red-500">unavailable</p>
+              )}
+            </div>
+            <div className="flex flex-row gap-1">
+              <p>Market Price:</p>
+              {prices.marketPrice ? (
+                <p className="text-green-500">
+                  {Number(prices.marketPrice).toFixed(2)} $
+                </p>
+              ) : (
+                <p className="text-red-500">unavailable</p>
+              )}
+            </div>
+            <div className="flex flex-row gap-1">
+              <p>Best Near Mint Price:</p>
+              {prices.betterPrice ? (
+                <p className="text-green-500">
+                  {Number(prices.betterPrice).toFixed(2)} $
+                </p>
+              ) : (
+                <p className="text-red-500">unavailable</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -7,13 +7,21 @@ import {
   CardType,
   Race,
   SetRarityCode,
+  CTPrice,
 } from "@/types";
 
 export async function GET() {
   try {
     const result = await prisma.storedCard.findMany({
       include: {
-        items: true,
+        items: {
+          include: {
+            ctPrices: true,
+          },
+        },
+      },
+      orderBy: {
+        id: "desc",
       },
     });
 
@@ -47,7 +55,23 @@ export async function GET() {
           storedCardId,
           value,
           wantedCount,
+          ctPrices,
         } = item;
+
+        const prices: Omit<CTPrice, "storedCardItemId"> | null =
+          ctPrices !== null
+            ? {
+                betterPrice: ctPrices.betterPrice
+                  ? ctPrices.betterPrice.toNumber()
+                  : null,
+                marketPrice: ctPrices.marketPrice
+                  ? ctPrices.marketPrice.toNumber()
+                  : null,
+                minPrice: ctPrices.minPrice
+                  ? ctPrices.minPrice.toNumber()
+                  : null,
+              }
+            : null;
 
         list.push({
           archetype,
@@ -59,6 +83,7 @@ export async function GET() {
           importance,
           language: language as CardLanguage,
           name,
+          prices,
           priority,
           race: race as keyof typeof Race,
           rarityCode: rarityCode as SetRarityCode,

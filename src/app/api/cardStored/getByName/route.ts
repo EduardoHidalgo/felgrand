@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const card = await prisma.storedCard.findFirst({
       where: {
-        name: cardName,
+        name: decodeURIComponent(cardName),
       },
       include: {
         items: true,
