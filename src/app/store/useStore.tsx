@@ -7,6 +7,7 @@ export interface UseStoreReturn {
   cards: Array<StoredCardCombined>;
   selectedCard: StoredCardCombined | null;
   onClickRow: (index: number) => void;
+  updateCard: (item: StoredCardCombined, index: number) => Promise<void>;
 }
 
 export const useStore = (props: UseStoreProps): UseStoreReturn => {
@@ -42,9 +43,27 @@ export const useStore = (props: UseStoreProps): UseStoreReturn => {
     setSelectedCard(cards[index]);
   };
 
+  const updateCard = async (item: StoredCardCombined, index: number) => {
+    const url = `/api/storedCardCombined/update`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      body: JSON.stringify(item),
+    });
+
+    if (response.ok == false) {
+      return console.error(await response.json());
+    }
+
+    setCards((old) =>
+      old.map((card, listIndex) => (listIndex == index ? { ...item } : card)),
+    );
+  };
+
   return {
     cards,
     onClickRow,
     selectedCard,
+    updateCard,
   };
 };

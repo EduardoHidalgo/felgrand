@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import {
   ArrowDownRightIcon,
   ArrowTrendingDownIcon,
@@ -9,15 +9,22 @@ import {
   QuestionMarkCircleIcon,
 } from "@heroicons/react/20/solid";
 
-import { CTPrice, TrendingPriceType } from "@/types";
+import { CTPrice, StoreStatus, TrendingPriceType } from "@/types";
 import { Tooltip } from "../tooltip";
 
 export interface TrendingPriceProps {
+  children: ReactNode;
   price: number;
   prices: Omit<CTPrice, "storedCardItemId"> | null;
+  status: StoreStatus;
 }
 
-export const TrendingPrice: FC<TrendingPriceProps> = ({ price, prices }) => {
+export const TrendingPrice: FC<TrendingPriceProps> = ({
+  children,
+  price,
+  prices,
+  status,
+}) => {
   const LOW_UP_TRENDING = 1.1;
   const MEDIUM_UP_TRENDING = 1.16;
   const HIGH_UP_TRENDING = 1.25;
@@ -26,7 +33,9 @@ export const TrendingPrice: FC<TrendingPriceProps> = ({ price, prices }) => {
   const HIGH_DOWN_TRENDING = 0.75;
 
   const isTrendingUp = (): TrendingPriceType => {
-    if (prices == null || price == 0) return "invalid";
+    if (status !== StoreStatus.Stored || prices == null) return "invalid";
+
+    if (price == 0) return "zero";
 
     if (prices.betterPrice != null && price <= prices.betterPrice)
       return "nearMintUp";
@@ -71,6 +80,7 @@ export const TrendingPrice: FC<TrendingPriceProps> = ({ price, prices }) => {
   };
 
   const trending = isTrendingUp();
+  const showContent = prices && trending !== "invalid";
 
   return (
     <Tooltip
@@ -81,7 +91,7 @@ export const TrendingPrice: FC<TrendingPriceProps> = ({ price, prices }) => {
         className: "w-full flex justify-end",
       }}
       content={
-        prices && (
+        showContent && (
           <div className="flex flex-col gap-4 text-lg font-bold">
             <div className="flex flex-row gap-1">
               <p>Minimum Price:</p>
@@ -112,15 +122,12 @@ export const TrendingPrice: FC<TrendingPriceProps> = ({ price, prices }) => {
       }
     >
       <div className="flex w-full flex-row-reverse justify-between gap-1">
-        <div className="flex flex-row gap-1">
-          <span>{price.toFixed(2).toString()}</span>
-          <span>$</span>
-        </div>
-        {price == 0 && (
-          <QuestionMarkCircleIcon className="h-5 w-5 text-red-600" />
-        )}
+        <div className="flex flex-row items-center px-1">{children}</div>
         {prices !== null && trending !== "invalid" && (
           <>
+            {trending == "zero" && (
+              <QuestionMarkCircleIcon className="h-5 w-5 text-red-600" />
+            )}
             {trending == "highDown" && (
               <ArrowTrendingDownIcon className="h-5 w-5 text-red-600" />
             )}

@@ -10,7 +10,7 @@ export const Chip: FC<ChipProps> = ({ className, children }) => {
   return (
     <span
       className={classNames(
-        "whitespace-nowrap rounded-full px-3 font-bold",
+        "whitespace-nowrap rounded-full px-3 text-xs font-bold",
         className,
       )}
     >

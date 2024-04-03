@@ -2,7 +2,7 @@ import { ChangeEvent, FC, useEffect, useState } from "react";
 import classNames from "classnames";
 
 import { TextfieldProps } from "@/components/textfield";
-import { useDebounce } from "@/hooks/useDebounde";
+import { useDebounce } from "@/hooks/useDebounce";
 import { InputType } from "@/types";
 
 export interface TableTextfieldProps
@@ -31,7 +31,7 @@ export const TableTextfield: FC<TableTextfieldProps> = ({
   const debouncedValue = useDebounce<InputType>(inputValue);
 
   useEffect(() => {
-    onChange && onChange(inputValue);
+    onChange && debouncedValue !== initialValue && onChange(inputValue);
   }, [debouncedValue]);
 
   const onChangeInternal = (e: ChangeEvent<HTMLInputElement>) => {

@@ -531,4 +531,5 @@ export type TrendingPriceType =
   | "highUp"
   | "nearMintUp"
   | "none"
-  | "invalid";
+  | "invalid"
+  | "zero";

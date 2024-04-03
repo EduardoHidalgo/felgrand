@@ -31,7 +31,7 @@ export const Tooltip: FC<TooltipProps> = ({
     >
       {children}
       {content && (
-        <p
+        <div
           className={classNames(
             "absolute z-10 flex rounded border border-white bg-black px-2 py-1 text-center leading-3",
             isHover == false && "hidden",
@@ -39,7 +39,7 @@ export const Tooltip: FC<TooltipProps> = ({
           )}
         >
           {content}
-        </p>
+        </div>
       )}
     </div>
   );

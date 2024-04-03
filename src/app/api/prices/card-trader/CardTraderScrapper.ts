@@ -159,7 +159,7 @@ export class CardTraderScrapper {
 
       const manaSearch = await this.page.waitForSelector(
         "#manasearch-input:not([disabled])",
-        { timeout: 10000 },
+        { timeout: 15000 },
       );
 
       if (manaSearch == null || manaSearch == undefined) {

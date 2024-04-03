@@ -7,7 +7,7 @@ import {
 } from "react";
 import classNames from "classnames";
 
-import { useDebounce } from "@/hooks/useDebounde";
+import { useDebounce } from "@/hooks/useDebounce";
 import { InputType } from "@/types";
 
 export interface TextfieldProps {
