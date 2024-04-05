@@ -9,5 +9,5 @@ export interface StoreColumnBanTypeProps {
 export const StoreColumnBanType: FC<StoreColumnBanTypeProps> = ({
   banType,
 }) => {
-  return banType;
+  return <div className="flex w-full flex-row justify-center">{banType}</div>;
 };

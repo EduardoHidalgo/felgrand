@@ -16,6 +16,7 @@ export interface TextfieldProps {
   initialValue?: InputType;
   label: string;
   min?: number;
+  max?: number;
   onChange?: (value: InputType) => void;
   placeholder?: string;
   readonly?: boolean;
@@ -34,6 +35,7 @@ export const Textfield: FC<TextfieldProps> = ({
   initialValue,
   label,
   min,
+  max,
   onChange,
   placeholder,
   readonly,
@@ -85,6 +87,7 @@ export const Textfield: FC<TextfieldProps> = ({
         disabled={disabled || readonly}
         id={id}
         min={min}
+        max={max}
         name={id}
         onChange={onChangeInternal}
         placeholder={placeholder}

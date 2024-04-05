@@ -24,7 +24,7 @@ export const StoreColumnValue: FC<StoreColumnValueProps> = ({ row, table }) => {
         id={`value-${index}`}
         onChange={onChange}
         type="price"
-        initialValue={value}
+        initialValue={value !== 0 ? value.toFixed(2).toString() : 0}
         styles={{
           wrapper: "!w-16",
           input: "text-right",

@@ -1,6 +1,6 @@
 "use client";
-import { useMemo } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
+import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 
 import { StoredCardCombined } from "@/types";
 import { VirtualizedDatatable } from "@/components/virtualizedDatatable";
@@ -23,6 +23,7 @@ import { StoreColumnStatus } from "./columns/status";
 import { StoreColumnStorageGroup } from "./columns/storageGroup";
 import { StoreColumnValue } from "./columns/value";
 import { StoreColumnWantedCount } from "./columns/wantedCount";
+import { StoreFilters } from "./filters";
 
 export default function StorePage() {
   const { cards, updateCard } = useStore({});
@@ -73,6 +74,7 @@ export default function StorePage() {
         cell: ({ row, table }) => (
           <StoreColumnCondition row={row} table={table} />
         ),
+        filterFn: "equalsString",
       },
       {
         accessorKey: "language",
@@ -82,6 +84,7 @@ export default function StorePage() {
         cell: ({ row }) => (
           <StoreColumnLanguage language={row.original.language} />
         ),
+        filterFn: "equalsString",
       },
       {
         accessorKey: "rarityCode",
@@ -91,12 +94,14 @@ export default function StorePage() {
         cell: ({ row }) => (
           <StoreColumnRarity rarity={row.original.rarityCode} />
         ),
+        filterFn: "equalsString",
       },
       {
         accessorKey: "status",
         minSize: 100,
         maxSize: 100,
         cell: ({ row, table }) => <StoreColumnStatus row={row} table={table} />,
+        filterFn: "equalsString",
       },
       {
         accessorKey: "importance",
@@ -105,6 +110,7 @@ export default function StorePage() {
         cell: ({ row, table }) => (
           <StoreColumnImportance row={row} table={table} />
         ),
+        filterFn: "equalsString",
       },
       {
         accessorKey: "priority",
@@ -113,6 +119,7 @@ export default function StorePage() {
         cell: ({ row, table }) => (
           <StoreColumnPriority row={row} table={table} />
         ),
+        filterFn: "equalsString",
       },
       {
         accessorKey: "storageGroup",
@@ -138,35 +145,39 @@ export default function StorePage() {
         cell: ({ row }) => (
           <StoreColumnCardType cardType={row.original.cardType} />
         ),
+        filterFn: "equalsString",
       },
       {
         accessorKey: "race",
         minSize: 100,
         maxSize: 100,
         cell: ({ row }) => <StoreColumnRace race={row.original.race} />,
+        filterFn: "equalsString",
       },
       {
-        accessorKey: "ban",
+        accessorKey: "banType",
         minSize: 80,
         maxSize: 80,
         cell: ({ row }) => (
           <StoreColumnBanType banType={row.original.banType} />
         ),
+        filterFn: "equalsString",
       },
     ],
     [],
   );
 
+  const initialFilters: ColumnFiltersState = [];
+
   return (
     <div className="fixed flex h-full w-full flex-col gap-2 p-1 pt-2">
-      <div className="flex flex-row gap-6">
-        <StoreSummary cards={cards} />
-      </div>
       <VirtualizedDatatable
         columns={columns}
         data={cards}
         estimateSize={37}
-        itemsCount={cards.length}
+        filters={<StoreFilters />}
+        initialFilters={initialFilters}
+        topRender={<StoreSummary />}
         updateData={updateCard}
       />
     </div>

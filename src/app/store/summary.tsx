@@ -2,20 +2,22 @@ import { StoredCardCombined } from "@/types";
 import { FC } from "react";
 
 export interface StoreSummaryProps {
-  cards: Array<StoredCardCombined>;
+  data?: Array<StoredCardCombined>;
 }
 
-export const StoreSummary: FC<StoreSummaryProps> = ({ cards }) => {
-  const totalCount = cards.reduce((sum, { count }) => (sum += count), 0);
-  const totalWantedCount = cards.reduce(
+export const StoreSummary: FC<StoreSummaryProps> = ({ data }) => {
+  if (data == undefined) return <></>;
+
+  const totalCount = data.reduce((sum, { count }) => (sum += count), 0);
+  const totalWantedCount = data.reduce(
     (sum, { wantedCount }) => (sum += wantedCount),
     0,
   );
-  const totalValue = cards.reduce(
+  const totalValue = data.reduce(
     (sum, { value, count }) => (sum += value * count),
     0,
   );
-  const totalBoughtValue = cards.reduce(
+  const totalBoughtValue = data.reduce(
     (sum, { boughtValue, wantedCount }) => (sum += boughtValue * wantedCount),
     0,
   );
