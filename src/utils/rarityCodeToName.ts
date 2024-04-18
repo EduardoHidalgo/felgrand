@@ -36,6 +36,8 @@ export function rarityCodeToName(
       return SetRarity.PrismaticSecretRare;
     case SetRarityCode.Pir:
       return SetRarity.PlatinumRare;
+    case SetRarityCode.QCScR:
+      return SetRarity.QuarterCenturySecretRare;
     case SetRarityCode.R:
       return SetRarity.Rare;
     case SetRarityCode.SP:

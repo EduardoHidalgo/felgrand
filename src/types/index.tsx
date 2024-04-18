@@ -164,6 +164,7 @@ export enum SetRarityCode {
   PS = "(PS)",
   PScR = "(PScR)",
   Pir = "(PIR)",
+  QCScR = "(QCScR)",
   R = "(R)",
   SP = "(SP)",
   SSP = "(SSP)",

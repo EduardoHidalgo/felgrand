@@ -384,7 +384,7 @@ export const StoreFilters = ({
             label="Condition"
             onChange={onChangeConditionFilter}
             options={conditionOptionsWithDefault}
-            value={Number(conditionColumn.getFilterValue())}
+            value={conditionColumn.getFilterValue() as number}
             styles={{
               select: classNames(
                 "whitespace-nowrap text-center font-bold",
