@@ -534,3 +534,5 @@ export type TrendingPriceType =
   | "none"
   | "invalid"
   | "zero";
+
+export type StoreCSV = [string, string, string, string, string, string, string];

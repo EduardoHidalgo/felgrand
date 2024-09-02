@@ -1,15 +1,21 @@
+import { FC, ReactNode } from "react";
 import classNames from "classnames";
-import { FC } from "react";
 
 export interface ButtonProps {
+  children?: ReactNode;
   disabled?: boolean;
-  label: string;
-  onClick: () => void;
+  label?: string;
+  onClick?: () => void;
 }
 
-export const Button: FC<ButtonProps> = ({ disabled, label, onClick }) => {
+export const Button: FC<ButtonProps> = ({
+  children,
+  disabled,
+  label,
+  onClick,
+}) => {
   const onClickHandler = () => {
-    if (!disabled) onClick();
+    if (!disabled && onClick) onClick();
   };
 
   return (
@@ -24,7 +30,7 @@ export const Button: FC<ButtonProps> = ({ disabled, label, onClick }) => {
           : "bg-white text-black hover:bg-gray-200",
       )}
     >
-      {label}
+      {children ? children : label}
     </button>
   );
 };
