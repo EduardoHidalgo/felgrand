@@ -40,7 +40,6 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.46.1",
     "@types/react-csv": "^1.1.10",
     "@types/uuid": "^10.0.0",
     "css-loader": "^7.1.2",
