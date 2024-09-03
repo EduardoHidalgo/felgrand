@@ -129,7 +129,7 @@ export const useDatabaseSearch = (
 
   const fetchInventory = async () => {
     const url = `/api/cardStored/getInventory`;
-    const response = await fetch(url, { method: "GET" }, cache: 'no-store' );
+    const response = await fetch(url, { method: "GET", cache: "no-store" });
 
     if (response.ok) {
       const data = (await response.json()) as GetStoredCardInventory;

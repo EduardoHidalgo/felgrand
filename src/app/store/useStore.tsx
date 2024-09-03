@@ -24,7 +24,7 @@ export const useStore = (props: UseStoreProps): UseStoreReturn => {
 
   const fetchList = async () => {
     const url = `/api/cardStored/getAll`;
-    const response = await fetch(url, { method: "GET" }, cache: 'no-store' );
+    const response = await fetch(url, { method: "GET", cache: "no-store" });
 
     if (response.ok) {
       const data = (await response.json()) as Array<StoredCardCombined>;
