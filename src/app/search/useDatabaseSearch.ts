@@ -23,10 +23,10 @@ export interface UseDatabaseSearchReturn {
   isInventoryLoading: boolean;
   list: YugiohCard[];
   onClickRow: (index: number) => Promise<void>;
-  rulings: AsyncHtmlScrap;
+  /*  rulings: AsyncHtmlScrap; */
   selectedCard: YugiohCard | null;
   storeCard: (cardName: string) => Promise<void>;
-  tips: AsyncHtmlScrap;
+  /* tips: AsyncHtmlScrap; */
 }
 
 export const useDatabaseSearch = (
@@ -41,14 +41,14 @@ export const useDatabaseSearch = (
 
   const [list, setList] = useState<Array<YugiohCard>>([]);
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
-  const [tips, setTips] = useState<AsyncHtmlScrap>({
+  /* const [tips, setTips] = useState<AsyncHtmlScrap>({
     html: null,
     state: AsyncState.Initial,
   });
   const [rulings, setRulings] = useState<AsyncHtmlScrap>({
     html: null,
     state: AsyncState.Initial,
-  });
+  }); */
   const [inventory, setInventory] = useState<AsyncInventoryList>({
     list: [],
     state: AsyncState.Initial,
@@ -60,11 +60,11 @@ export const useDatabaseSearch = (
 
   useEffect(() => {
     if (selectedCard !== null && selectedCard !== undefined) {
-      setTips({ ...tips, state: AsyncState.Loading });
+      /* setTips({ ...tips, state: AsyncState.Loading });
       setRulings({ ...rulings, state: AsyncState.Loading });
 
       fetchTips(selectedCard);
-      fetchRulings(selectedCard);
+      fetchRulings(selectedCard); */
       fetchInventory();
     }
   }, [selectedCard]);
@@ -102,7 +102,7 @@ export const useDatabaseSearch = (
     if (response.ok) rehydrateStoredCardToInventory(cardName);
   };
 
-  const fetchTips = async (card: YugiohCard) => {
+  /* const fetchTips = async (card: YugiohCard) => {
     const url = `/api/tips?card_name=${card.name}`;
     const response = await fetch(url, { method: "GET" });
 
@@ -124,7 +124,7 @@ export const useDatabaseSearch = (
     } else {
       setRulings({ html: null, state: AsyncState.Error });
     }
-  };
+  }; */
 
   const fetchInventory = async () => {
     const url = `/api/cardStored/getInventory`;
@@ -142,6 +142,7 @@ export const useDatabaseSearch = (
         list: [],
         state: AsyncState.Error,
       });
+      console.log({ response });
     }
   };
 
@@ -149,8 +150,8 @@ export const useDatabaseSearch = (
     setSelectedCard(null);
 
     if (searchValue === "" || searchValue.length < SEARCHABLE_LENGTH) {
-      setTips({ html: null, state: AsyncState.Initial });
-      setRulings({ html: null, state: AsyncState.Initial });
+      /*  setTips({ html: null, state: AsyncState.Initial });
+      setRulings({ html: null, state: AsyncState.Initial }); */
       setList([]);
       onFetchClean();
       return;
@@ -223,8 +224,8 @@ export const useDatabaseSearch = (
   const onClickRow = async (index: number) => {
     if (selectedCard && list[index].id === selectedCard.id) return;
 
-    setTips({ html: null, state: AsyncState.Initial });
-    setRulings({ html: null, state: AsyncState.Initial });
+    /*  setTips({ html: null, state: AsyncState.Initial });
+    setRulings({ html: null, state: AsyncState.Initial }); */
     setSelectedCard(list[index]);
 
     await navigator.clipboard.writeText(list[index].name);
@@ -241,9 +242,9 @@ export const useDatabaseSearch = (
     isInventoryLoading,
     list,
     onClickRow,
-    rulings,
+    /*  rulings, */
     selectedCard,
     storeCard,
-    tips,
+    /*   tips, */
   };
 };

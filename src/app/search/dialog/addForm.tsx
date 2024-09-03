@@ -41,6 +41,7 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
   pricesState,
   yugiohCard,
 }) => {
+  const isNotProd = process.env.NODE_ENV !== "production";
   const cardSets = yugiohCard.card_sets;
   const isReleased = cardSets !== undefined;
 
@@ -287,71 +288,73 @@ export const SearchDialogAddForm: FC<SearchDialogAddFormProps> = ({
           />
         </div>
       </div>
-      <div className="flex flex-col">
-        <div className="flex w-full flex-row justify-between border-b border-white pb-2 pl-2">
-          <h1 className="text-start text-2xl font-medium">Set Prices</h1>
-          <Button
-            disabled={
-              cardSets === undefined ||
-              addForm.values.setIndex == null ||
-              pricesState == AsyncState.Loading ||
-              pricesState == AsyncState.Success
-            }
-            label="Get selected set prices"
-            onClick={getSelectedSetPrices}
-          />
+      {isNotProd && (
+        <div className="flex flex-col">
+          <div className="flex w-full flex-row justify-between border-b border-white pb-2 pl-2">
+            <h1 className="text-start text-2xl font-medium">Set Prices</h1>
+            <Button
+              disabled={
+                cardSets === undefined ||
+                addForm.values.setIndex == null ||
+                pricesState == AsyncState.Loading ||
+                pricesState == AsyncState.Success
+              }
+              label="Get selected set prices"
+              onClick={getSelectedSetPrices}
+            />
+          </div>
+          {pricesState == AsyncState.Error && (
+            <p className="mt-4 text-red-500">
+              Some error happened. Unable to load prices.
+            </p>
+          )}
+          {pricesState === AsyncState.Initial && (
+            <p className="mt-4">
+              click the "Get selected set prices" button to obtain prices for
+              real stores.
+            </p>
+          )}
+          {pricesState == AsyncState.Loading && (
+            <div className="mt-4 flex flex-row items-center justify-center">
+              <Loader />
+            </div>
+          )}
+          {pricesState == AsyncState.Success && prices && (
+            <div className="flex flex-row gap-4 text-lg font-bold">
+              <div className="flex flex-row gap-1">
+                <p>Minimum Price:</p>
+                {prices.minPrice ? (
+                  <p className="text-green-500">
+                    {Number(prices.minPrice).toFixed(2)} $
+                  </p>
+                ) : (
+                  <p className="text-red-500">unavailable</p>
+                )}
+              </div>
+              <div className="flex flex-row gap-1">
+                <p>Market Price:</p>
+                {prices.marketPrice ? (
+                  <p className="text-green-500">
+                    {Number(prices.marketPrice).toFixed(2)} $
+                  </p>
+                ) : (
+                  <p className="text-red-500">unavailable</p>
+                )}
+              </div>
+              <div className="flex flex-row gap-1">
+                <p>Best Near Mint Price:</p>
+                {prices.betterPrice ? (
+                  <p className="text-green-500">
+                    {Number(prices.betterPrice).toFixed(2)} $
+                  </p>
+                ) : (
+                  <p className="text-red-500">unavailable</p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-        {pricesState == AsyncState.Error && (
-          <p className="mt-4 text-red-500">
-            Some error happened. Unable to load prices.
-          </p>
-        )}
-        {pricesState === AsyncState.Initial && (
-          <p className="mt-4">
-            click the "Get selected set prices" button to obtain prices for real
-            stores.
-          </p>
-        )}
-        {pricesState == AsyncState.Loading && (
-          <div className="mt-4 flex flex-row items-center justify-center">
-            <Loader />
-          </div>
-        )}
-        {pricesState == AsyncState.Success && prices && (
-          <div className="flex flex-row gap-4 text-lg font-bold">
-            <div className="flex flex-row gap-1">
-              <p>Minimum Price:</p>
-              {prices.minPrice ? (
-                <p className="text-green-500">
-                  {Number(prices.minPrice).toFixed(2)} $
-                </p>
-              ) : (
-                <p className="text-red-500">unavailable</p>
-              )}
-            </div>
-            <div className="flex flex-row gap-1">
-              <p>Market Price:</p>
-              {prices.marketPrice ? (
-                <p className="text-green-500">
-                  {Number(prices.marketPrice).toFixed(2)} $
-                </p>
-              ) : (
-                <p className="text-red-500">unavailable</p>
-              )}
-            </div>
-            <div className="flex flex-row gap-1">
-              <p>Best Near Mint Price:</p>
-              {prices.betterPrice ? (
-                <p className="text-green-500">
-                  {Number(prices.betterPrice).toFixed(2)} $
-                </p>
-              ) : (
-                <p className="text-red-500">unavailable</p>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+      )}
     </>
   );
 };

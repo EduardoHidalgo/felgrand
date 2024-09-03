@@ -74,6 +74,6 @@ export async function GET(request: NextRequest) {
     await page.close();
     await browser.close();
 
-    return response;
+    return response ? response : Response.json({ html: null }, { status: 400 });
   }
 }

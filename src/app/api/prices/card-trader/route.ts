@@ -44,7 +44,9 @@ export async function GET(request: NextRequest) {
 
     await scrapper.executePriceScrapping();
 
-    return scrapper.response;
+    return scrapper.response
+      ? scrapper.response
+      : Response.json(null, { status: 400 });
   } catch (error) {
     console.log(error);
     return Response.json(null, { status: 400 });

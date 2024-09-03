@@ -15,11 +15,12 @@ import classNames from "classnames";
 
 export interface TcgCardProps {
   card: YugiohCard;
-  rulings: { html: string | null; state: AsyncState };
-  tips: { html: string | null; state: AsyncState };
+  /*  rulings: { html: string | null; state: AsyncState };
+  tips: { html: string | null; state: AsyncState }; */
 }
 
-export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
+export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
+  /*   const isNotProd = process.env.NODE_ENV !== "production"; */
   const [imageIndex, setImageIndex] = useState<number>(0);
 
   const hasValidCardSets =
@@ -184,38 +185,42 @@ export const TcgCard: FC<TcgCardProps> = ({ card, rulings, tips }) => {
           </Datatable>
         </div>
       )}
-      <div className="flex w-full flex-col justify-start gap-2">
-        <h2 className="text-xl font-semibold">Tips</h2>
-        {tips.html !== null && tips.state == AsyncState.Success && (
-          <div
-            className="inner-html"
-            dangerouslySetInnerHTML={{ __html: JSON.parse(tips.html) }}
-          />
-        )}
-        {tips.html === null && tips.state == AsyncState.Success && (
-          <p>No tips available.</p>
-        )}
-        {tips.state == AsyncState.Loading && <Loader />}
-        {tips.state == AsyncState.Error && (
-          <p>Some error happened. Unable to load tips.</p>
-        )}
-      </div>
-      <div className="flex w-full flex-col justify-start gap-2">
-        <h2 className="text-xl font-semibold">Rulings</h2>
-        {rulings.html !== null && rulings.state == AsyncState.Success && (
-          <div
-            className="inner-html"
-            dangerouslySetInnerHTML={{ __html: JSON.parse(rulings.html) }}
-          />
-        )}
-        {rulings.html === null && rulings.state == AsyncState.Success && (
-          <p>No rulings available.</p>
-        )}
-        {rulings.state == AsyncState.Loading && <Loader />}
-        {rulings.state == AsyncState.Error && (
-          <p>Some error happened. Unable to load rulings.</p>
-        )}
-      </div>
+      {/*   {isNotProd && (
+        <>
+          <div className="flex w-full flex-col justify-start gap-2">
+            <h2 className="text-xl font-semibold">Tips</h2>
+            {tips.html !== null && tips.state == AsyncState.Success && (
+              <div
+                className="inner-html"
+                dangerouslySetInnerHTML={{ __html: JSON.parse(tips.html) }}
+              />
+            )}
+            {tips.html === null && tips.state == AsyncState.Success && (
+              <p>No tips available.</p>
+            )}
+            {tips.state == AsyncState.Loading && <Loader />}
+            {tips.state == AsyncState.Error && (
+              <p>Some error happened. Unable to load tips.</p>
+            )}
+          </div>
+          <div className="flex w-full flex-col justify-start gap-2">
+            <h2 className="text-xl font-semibold">Rulings</h2>
+            {rulings.html !== null && rulings.state == AsyncState.Success && (
+              <div
+                className="inner-html"
+                dangerouslySetInnerHTML={{ __html: JSON.parse(rulings.html) }}
+              />
+            )}
+            {rulings.html === null && rulings.state == AsyncState.Success && (
+              <p>No rulings available.</p>
+            )}
+            {rulings.state == AsyncState.Loading && <Loader />}
+            {rulings.state == AsyncState.Error && (
+              <p>Some error happened. Unable to load rulings.</p>
+            )}
+          </div>
+        </>
+      )} */}
     </div>
   );
 };
