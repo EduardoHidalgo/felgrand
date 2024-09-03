@@ -98,6 +98,7 @@ export const useDatabaseSearch = (
       method: "POST",
       body: JSON.stringify(body),
       cache: "no-store",
+      next: { revalidate: 0 },
     });
 
     if (response.ok) rehydrateStoredCardToInventory(cardName);
@@ -129,7 +130,11 @@ export const useDatabaseSearch = (
 
   const fetchInventory = async () => {
     const url = `/api/cardStored/getInventory`;
-    const response = await fetch(url, { method: "GET", cache: "no-store" });
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
 
     if (response.ok) {
       const data = (await response.json()) as GetStoredCardInventory;

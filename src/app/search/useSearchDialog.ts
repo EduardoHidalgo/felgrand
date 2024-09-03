@@ -67,7 +67,11 @@ export const useSearchDialog = ({
     }
 
     const url = `/api/cardStored/getByName?card_name=${encodeURIComponent(card.name)}`;
-    const response = await fetch(url, { method: "GET", cache: "no-store" });
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
 
     if (response.ok) {
       const data = (await response.json()) as StoredCardItem | null;
@@ -224,6 +228,7 @@ export const useSearchDialog = ({
     const response = await fetch(url, {
       method: "GET",
       cache: "no-store",
+      next: { revalidate: 0 },
     });
 
     if (response.ok) {
