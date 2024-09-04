@@ -1,6 +1,9 @@
 import prisma from "@/lib/prisma";
 import { GetStoredCardInventory } from "@/types";
 
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 export async function GET() {
   try {
     const result = await prisma.storedCard.findMany({
