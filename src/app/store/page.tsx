@@ -25,6 +25,8 @@ import { StoreColumnValue } from "./columns/value";
 import { StoreColumnWantedCount } from "./columns/wantedCount";
 import { StoreFilters } from "./filters";
 
+export const dynamic = "force-dynamic";
+
 export default function StorePage() {
   const { cards, updateCard } = useStore({});
 
