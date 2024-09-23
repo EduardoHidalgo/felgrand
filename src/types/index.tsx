@@ -76,7 +76,7 @@ export interface BanlistInfo {
 }
 
 export enum Ban {
-  Banned = "Banned",
+  Forbidden = "Forbidden",
   Limited = "Limited",
   SemiLimited = "Semi-Limited",
   Unlimited = "Unlimited",

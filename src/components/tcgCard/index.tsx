@@ -38,8 +38,8 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
 
   const banLabel = (ban: Ban | undefined) => {
     switch (ban) {
-      case Ban.Banned:
-        return "(0) Banned";
+      case Ban.Forbidden:
+        return "(0) Forbidden";
       case Ban.Limited:
         return "(1) Limited";
       case Ban.SemiLimited:
