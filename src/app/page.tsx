@@ -1,3 +1,11 @@
+"use client";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Dashboard } from "./dashboard";
+
 export default function Home() {
-  return <div>home</div>;
+  return (
+    <TooltipProvider>
+      <Dashboard />
+    </TooltipProvider>
+  );
 }
