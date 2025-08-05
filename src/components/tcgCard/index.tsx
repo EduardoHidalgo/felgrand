@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/20/solid";
 
 import { AsyncState, Ban, FrameType, YugiohCard } from "@/types";
+import { CardTypeText } from "../cardTypeText";
 import { Datatable } from "../datatable";
 import { Loader } from "../loader";
 import { Tooltip } from "../tooltip";
@@ -59,10 +60,10 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
 
   return (
     <div className="flex w-full flex-col items-center gap-2 px-2">
-      <div className="relative w-80">
+      <div className="relative w-full max-w-80">
         {imageIndex != 0 && (
           <div
-            className="absolute inset-y-0 -left-10 m-auto h-8 w-8 cursor-pointer rounded-full bg-white transition-colors hover:bg-gray-200"
+            className="absolute inset-y-0 -left-6 z-10 m-auto h-8 w-8 cursor-pointer rounded-full bg-white transition-colors hover:bg-gray-200 md:-left-10"
             onClick={onClickLeftImage}
           >
             <ChevronLeftIcon className="text-black" />
@@ -70,7 +71,7 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
         )}
         {imageIndex != imagesLength - 1 && (
           <div
-            className="absolute inset-y-0 -right-10 m-auto h-8 w-8 cursor-pointer rounded-full bg-white transition-colors hover:bg-gray-200"
+            className="absolute inset-y-0 -right-6 z-10 m-auto h-8 w-8 cursor-pointer rounded-full bg-white transition-colors hover:bg-gray-200 md:-right-10"
             onClick={onClickRightImage}
           >
             <ChevronRightIcon className="text-black" />
@@ -96,13 +97,15 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
         )}
       </div>
       <div className="flex w-full flex-col">
-        <h2 className="mb-1 text-xl font-semibold">{card.name}</h2>
-        <div className="flex flex-row justify-start gap-8">
+        <h2 className="mb-1 break-words text-lg font-semibold md:text-xl">
+          {card.name}
+        </h2>
+        <div className="flex flex-col gap-2 text-sm sm:flex-row sm:justify-start sm:gap-8">
           <span className="">{card.type}</span>
           <span className="">{card.race}</span>
           <div className="">{card.archetype}</div>
         </div>
-        <div className="mb-1 flex flex-row justify-start gap-8">
+        <div className="mb-1 flex flex-col gap-2 text-sm sm:flex-row sm:justify-start sm:gap-8">
           {isMonster(card.frameType) &&
             (isLink(card.frameType) ? (
               <>
@@ -123,16 +126,20 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
             ))}
         </div>
       </div>
-      <div className="whitespace-pre-line text-sm">{card.desc}</div>
+      <div className="whitespace-pre-line text-lg">{card.desc}</div>
       <div className="flex w-full flex-col">
         <Datatable
           showDisplay={!hasValidCardSets}
           display="This card hasn't been released yet."
         >
           <Datatable.Head>
-            <Datatable.HeaderCell>set code</Datatable.HeaderCell>
-            <Datatable.HeaderCell>set name</Datatable.HeaderCell>
-            <Datatable.HeaderCell className="text-center">
+            <Datatable.HeaderCell className="text-xs">
+              set code
+            </Datatable.HeaderCell>
+            <Datatable.HeaderCell className="hidden text-xs sm:table-cell">
+              set name
+            </Datatable.HeaderCell>
+            <Datatable.HeaderCell className="text-center text-xs">
               rarity
             </Datatable.HeaderCell>
           </Datatable.Head>
@@ -140,9 +147,19 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
             {(hasValidCardSets ? card.card_sets : [])?.map((set, index) => (
               <Datatable.Row index={index} key={index}>
                 <Datatable.Data>
-                  <p className="whitespace-nowrap">{set.set_code}</p>
+                  <div className="flex flex-col">
+                    <p className="whitespace-nowrap text-xs font-medium">
+                      {set.set_code}
+                    </p>
+                    {/* Mostrar set name en móviles debajo del código */}
+                    <p className="text-xs text-gray-500 sm:hidden">
+                      {set.set_name}
+                    </p>
+                  </div>
                 </Datatable.Data>
-                <Datatable.Data>{set.set_name}</Datatable.Data>
+                <Datatable.Data className="hidden text-xs sm:table-cell">
+                  {set.set_name}
+                </Datatable.Data>
                 <Datatable.Data>
                   <Tooltip
                     container={{
@@ -153,7 +170,7 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
                       className: "right-12 top-0 bottom-0 whitespace-nowrap",
                     }}
                   >
-                    {set.set_rarity_code}
+                    <span className="text-xs">{set.set_rarity_code}</span>
                   </Tooltip>
                 </Datatable.Data>
               </Datatable.Row>
@@ -165,19 +182,23 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
         <div className="flex w-full flex-col">
           <Datatable>
             <Datatable.Head>
-              <Datatable.HeaderCell>Format</Datatable.HeaderCell>
-              <Datatable.HeaderCell>Ban Condition</Datatable.HeaderCell>
+              <Datatable.HeaderCell className="text-xs">
+                Format
+              </Datatable.HeaderCell>
+              <Datatable.HeaderCell className="text-xs">
+                Ban Condition
+              </Datatable.HeaderCell>
             </Datatable.Head>
             <Datatable.Body>
               <Datatable.Row index={0}>
-                <Datatable.Data>{"TCG"}</Datatable.Data>
-                <Datatable.Data>
+                <Datatable.Data className="text-xs">{"TCG"}</Datatable.Data>
+                <Datatable.Data className="text-xs">
                   {banLabel(card.banlist_info.ban_tcg)}
                 </Datatable.Data>
               </Datatable.Row>
               <Datatable.Row index={1}>
-                <Datatable.Data>{"OCG"}</Datatable.Data>
-                <Datatable.Data>
+                <Datatable.Data className="text-xs">{"OCG"}</Datatable.Data>
+                <Datatable.Data className="text-xs">
                   {banLabel(card.banlist_info.ban_ocg)}
                 </Datatable.Data>
               </Datatable.Row>
@@ -185,42 +206,6 @@ export const TcgCard: FC<TcgCardProps> = ({ card /* rulings, tips */ }) => {
           </Datatable>
         </div>
       )}
-      {/*   {isNotProd && (
-        <>
-          <div className="flex w-full flex-col justify-start gap-2">
-            <h2 className="text-xl font-semibold">Tips</h2>
-            {tips.html !== null && tips.state == AsyncState.Success && (
-              <div
-                className="inner-html"
-                dangerouslySetInnerHTML={{ __html: JSON.parse(tips.html) }}
-              />
-            )}
-            {tips.html === null && tips.state == AsyncState.Success && (
-              <p>No tips available.</p>
-            )}
-            {tips.state == AsyncState.Loading && <Loader />}
-            {tips.state == AsyncState.Error && (
-              <p>Some error happened. Unable to load tips.</p>
-            )}
-          </div>
-          <div className="flex w-full flex-col justify-start gap-2">
-            <h2 className="text-xl font-semibold">Rulings</h2>
-            {rulings.html !== null && rulings.state == AsyncState.Success && (
-              <div
-                className="inner-html"
-                dangerouslySetInnerHTML={{ __html: JSON.parse(rulings.html) }}
-              />
-            )}
-            {rulings.html === null && rulings.state == AsyncState.Success && (
-              <p>No rulings available.</p>
-            )}
-            {rulings.state == AsyncState.Loading && <Loader />}
-            {rulings.state == AsyncState.Error && (
-              <p>Some error happened. Unable to load rulings.</p>
-            )}
-          </div>
-        </>
-      )} */}
     </div>
   );
 };

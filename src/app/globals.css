@@ -20,3 +20,28 @@ select {
   background-position: right 4px center !important;
   background-size: 24px 24px !important;
 }
+
+/* Mejoras para móviles */
+@media (max-width: 768px) {
+  /* Hacer que las tablas sean más compactas en móviles */
+  table {
+    font-size: 0.875rem;
+  }
+
+  /* Asegurar que el contenido no se desborde horizontalmente */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Mejorar la legibilidad de texto pequeño en móviles */
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  /* Dar más espacio vertical a las filas de la tabla en móviles */
+  td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}

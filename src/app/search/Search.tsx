@@ -1,19 +1,16 @@
 "use client";
 import { FC, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { StarIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
+import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
 
 import { useDatabaseSearch } from "./useDatabaseSearch";
-import { useSearchDialog } from "./useSearchDialog";
 
 import { ChipCardType } from "@/components/chipCardType";
+import { CardTypeText } from "@/components/cardTypeText";
 import { Datatable } from "@/components/datatable";
-import { Dialog } from "@/components/dialog";
 import { SearchBar } from "@/components/searchbar";
-import { SearchDialog } from "./dialog";
 import { TcgCard } from "@/components/tcgCard";
-import { AsyncState } from "@/types";
 
 export interface SearchPageLayoutProps {}
 
@@ -23,8 +20,8 @@ export const SearchPageLayout: FC<SearchPageLayoutProps> = ({}) => {
   const searchParams = useSearchParams();
   const searchParam = searchParams.get("search");
 
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [dialogIndex, setDialogIndex] = useState<number | null>(null);
+  // Estado para mobile: controlar si se muestra la lista o el detalle
+  const [showMobileDetail, setShowMobileDetail] = useState<boolean>(false);
 
   const onFetchClean = () => {
     router.push(pathname);
@@ -34,38 +31,9 @@ export const SearchPageLayout: FC<SearchPageLayoutProps> = ({}) => {
     router.push(`${pathname}?${params}`);
   };
 
-  const {
-    fetchList,
-    inventory,
-    isInventoried,
-    isInventoryLoading,
-    list,
-    onClickRow,
-    /*  rulings, */
-    selectedCard,
-    storeCard,
-    /*  tips, */
-  } = useDatabaseSearch({
+  const { fetchList, list, onClickRow, selectedCard } = useDatabaseSearch({
     onFetchClean,
     onFetchFound,
-  });
-
-  const {
-    addNewStoredCardItem,
-    cleanPrice,
-    cleanStates,
-    deleteStoredCardItem,
-    searchDialogOpened,
-    storedCard,
-    storedCardState,
-    submitState,
-    updateStoredCard,
-    updateStoredCardItem,
-    getPrices,
-    prices,
-    pricesState,
-  } = useSearchDialog({
-    card: selectedCard,
   });
 
   useEffect(() => {
@@ -74,59 +42,27 @@ export const SearchPageLayout: FC<SearchPageLayoutProps> = ({}) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (
-      selectedCard !== null &&
-      dialogIndex !== null &&
-      selectedCard.id == list[dialogIndex].id
-    ) {
-      openDialogSecurely();
-    }
-  }, [selectedCard, dialogIndex]);
-
-  const closeDialog = () => {
-    setDialogOpen(false);
-    setDialogIndex(null);
-    cleanStates();
-  };
-
-  const openDialog = (index: number) => {
+  const handleCardClick = async (index: number) => {
     onClickRow(index);
-    setDialogIndex(index);
+    // En móviles, mostrar el detalle
+    setShowMobileDetail(true);
   };
 
-  const openDialogSecurely = async () => {
-    await searchDialogOpened();
-    setDialogOpen(true);
-  };
-
-  const addStoredCardAndOpenDialog = async (
-    cardName: string,
-    index: number,
-  ) => {
-    await storeCard(cardName);
-    openDialog(index);
+  const handleBackToList = () => {
+    setShowMobileDetail(false);
   };
 
   return (
-    <>
-      <Dialog closeDialog={closeDialog} open={dialogOpen}>
-        <SearchDialog
-          addNewStoredCardItem={addNewStoredCardItem}
-          cleanPrice={cleanPrice}
-          deleteStoredCardItem={deleteStoredCardItem}
-          getPrices={getPrices}
-          prices={prices}
-          pricesState={pricesState}
-          storedCard={storedCard}
-          storedCardState={storedCardState}
-          submitState={submitState}
-          updateStoredCard={updateStoredCard}
-          updateStoredCardItem={updateStoredCardItem}
-          yugiohCard={selectedCard}
-        />
-      </Dialog>
-      <div className="fixed left-0 flex h-full w-[60vw] max-w-[60vw] flex-col overflow-x-hidden overflow-y-scroll px-2">
+    <div className="flex h-full w-full">
+      {/* Panel izquierdo - Lista de cartas */}
+      <div
+        className={classNames(
+          "flex flex-col overflow-x-hidden overflow-y-scroll px-2",
+          // En móviles: mostrar lista completa o ocultar cuando se ve detalle
+          "w-full md:w-[60vw] md:max-w-[60vw]",
+          showMobileDetail ? "hidden md:flex" : "flex",
+        )}
+      >
         <SearchBar fetchData={fetchList} initialValue={searchParam} />
         <Datatable
           display="There is no searched cards."
@@ -134,13 +70,14 @@ export const SearchPageLayout: FC<SearchPageLayoutProps> = ({}) => {
         >
           <Datatable.Head>
             <Datatable.HeaderCell>name</Datatable.HeaderCell>
-            <Datatable.HeaderCell className="text-center">
+            <Datatable.HeaderCell className="hidden text-center sm:table-cell">
               type
             </Datatable.HeaderCell>
-            <Datatable.HeaderCell>archetype</Datatable.HeaderCell>
-            <Datatable.HeaderCell>race</Datatable.HeaderCell>
-            <Datatable.HeaderCell className="text-center">
-              stored
+            <Datatable.HeaderCell className="hidden lg:table-cell">
+              archetype
+            </Datatable.HeaderCell>
+            <Datatable.HeaderCell className="hidden md:table-cell">
+              race
             </Datatable.HeaderCell>
           </Datatable.Head>
           <Datatable.Body>
@@ -148,7 +85,7 @@ export const SearchPageLayout: FC<SearchPageLayoutProps> = ({}) => {
               <Datatable.Row
                 index={index}
                 key={card.id}
-                onClickRow={onClickRow}
+                onClickRow={handleCardClick}
                 isSelected={
                   selectedCard ? selectedCard.id === card.id : undefined
                 }
@@ -157,60 +94,66 @@ export const SearchPageLayout: FC<SearchPageLayoutProps> = ({}) => {
                   className="justify-between"
                   copyToClipboard={card.name}
                 >
-                  {card.name}
+                  <div className="flex flex-col">
+                    <span className="font-medium">{card.name}</span>
+                    {/* Mostrar tipo y raza en móviles debajo del nombre */}
+                    <div className="text-xs text-gray-500 sm:hidden">
+                      <CardTypeText type={card.type} size="xs" /> • {card.race}
+                      {card.archetype && ` • ${card.archetype}`}
+                    </div>
+                  </div>
                 </Datatable.Data>
-                <Datatable.Data className="!block text-center">
+                <Datatable.Data className="hidden text-center sm:table-cell">
                   <ChipCardType type={card.type} />
                 </Datatable.Data>
-                <Datatable.Data>{card.race}</Datatable.Data>
-                <Datatable.Data
-                  className="justify-between"
-                  copyToClipboard={card.archetype}
-                >
-                  {card.archetype ? card.archetype : ""}
+                <Datatable.Data className="hidden lg:table-cell">
+                  <span className="truncate" title={card.archetype || ""}>
+                    {card.archetype ? card.archetype : ""}
+                  </span>
                 </Datatable.Data>
-                <Datatable.Data clickRowIgnore>
-                  <div className="flex w-full flex-row justify-center">
-                    {isInventoryLoading && (
-                      <StarIcon className="h-5 w-5 animate-pulse cursor-not-allowed text-gray-100" />
-                    )}
-                    {inventory.state === AsyncState.Error && (
-                      <ExclamationCircleIcon className="h-5 w-5 cursor-not-allowed text-red-300" />
-                    )}
-                    {inventory.state === AsyncState.Success &&
-                      (isInventoried(card.name) ? (
-                        <StarIcon
-                          className={classNames(
-                            "h-5 w-5 cursor-pointer text-yellow-400",
-                            "transition-all hover:scale-125 hover:text-yellow-300",
-                          )}
-                          onClick={() => openDialog(index)}
-                        />
-                      ) : (
-                        <StarIcon
-                          className={classNames(
-                            "h-5 w-5 cursor-pointer text-gray-600",
-                            "transition-all hover:scale-125 hover:text-gray-500",
-                          )}
-                          onClick={() =>
-                            addStoredCardAndOpenDialog(card.name, index)
-                          }
-                        />
-                      ))}
-                  </div>
+                <Datatable.Data
+                  className="hidden justify-between md:table-cell"
+                  copyToClipboard={card.race}
+                >
+                  {card.race}
                 </Datatable.Data>
               </Datatable.Row>
             ))}
           </Datatable.Body>
         </Datatable>
       </div>
-      <div className="fixed right-0 flex h-full w-[40vw] flex-col overflow-x-hidden overflow-y-scroll pb-12 pt-2">
+
+      {/* Panel derecho - Detalle de carta */}
+      <div
+        className={classNames(
+          "flex flex-col overflow-x-hidden overflow-y-scroll pb-12 pt-2",
+          // En móviles: mostrar detalle completo o ocultar cuando se ve lista
+          "w-full md:w-[40vw]",
+          showMobileDetail ? "flex" : "hidden md:flex",
+        )}
+      >
+        {/* Botón de regreso para móviles */}
+        {showMobileDetail && (
+          <button
+            onClick={handleBackToList}
+            className="flex items-center gap-2 p-2 text-blue-600 hover:text-blue-800 md:hidden"
+          >
+            <ArrowLeftIcon className="h-5 w-5" />
+            <span>Back to list</span>
+          </button>
+        )}
+
         {selectedCard ? (
-          <TcgCard card={selectedCard} /* tips={tips} rulings={rulings} */ />
+          <TcgCard card={selectedCard} />
         ) : (
-          <div>unselected card.</div>
+          <div className="flex h-full items-center justify-center text-gray-500">
+            <div className="text-center">
+              <p className="hidden md:block">Select a card to view details.</p>
+              <p className="md:hidden">Search for cards to get started.</p>
+            </div>
+          </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
