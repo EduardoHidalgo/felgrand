@@ -194,7 +194,7 @@ export const useDatabaseSearch = (
         count++;
         return true;
       }
-      if (card.card_sets) {
+      /* if (card.card_sets) {
         for (let index = 0; index < card.card_sets.length; index++) {
           const set = card.card_sets[index];
           if (String(set.set_name).toLowerCase().includes(search)) {
@@ -207,7 +207,7 @@ export const useDatabaseSearch = (
             return true;
           }
         }
-      }
+      } */
 
       return false;
     });
